@@ -1,12 +1,234 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Sazio V3</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #0f172a, #020617);
+      color: white;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: auto;
+      padding: 20px;
+    }
+
+    .hero {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 24px;
+      padding: 30px 20px;
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    .hero h1 {
+      font-size: 32px;
+      margin-bottom: 12px;
+    }
+
+    .hero p {
+      color: #cbd5e1;
+      font-size: 16px;
+      line-height: 1.6;
+    }
+
+    .badge {
+      display: inline-block;
+      background: white;
+      color: #0f172a;
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: bold;
+      margin-bottom: 15px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 18px;
+      margin-bottom: 25px;
+    }
+
+    .card {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 22px;
+      padding: 20px;
+    }
+
+    .card h3 {
+      margin-bottom: 10px;
+      font-size: 20px;
+    }
+
+    .card p {
+      color: #cbd5e1;
+      line-height: 1.5;
+      font-size: 14px;
+    }
+
+    .section {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 24px;
+      padding: 22px;
+      margin-bottom: 20px;
+    }
+
+    .section h2 {
+      margin-bottom: 16px;
+      font-size: 24px;
+    }
+
+    .input, .textarea, .button {
+      width: 100%;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(255,255,255,0.08);
+      color: white;
+      padding: 14px;
+      margin-bottom: 12px;
+      font-size: 15px;
+    }
+
+    .textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    .button {
+      background: white;
+      color: #0f172a;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .button:hover {
+      opacity: 0.92;
+    }
+
+    .output {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 18px;
+      padding: 16px;
+      margin-top: 15px;
+      white-space: pre-wrap;
+      line-height: 1.6;
+      color: #e2e8f0;
+    }
+
+    .footer {
+      text-align: center;
+      color: #94a3b8;
+      font-size: 14px;
+      margin-top: 30px;
+      padding-bottom: 20px;
+    }
+
+    @media (max-width: 600px) {
+      .hero h1 {
+        font-size: 26px;
+      }
+    }
+  </style>
 </head>
 <body>
-  <h1>Sazio V3</h1>
-  <p>My app is starting successfully.</p>
+  <div class="container">
+    <div class="hero">
+      <div class="badge">SAZIO V3 LIVE</div>
+      <h1>Build once. Create daily. Earn continuously.</h1>
+      <p>
+        Sazio V3 is your creator-first AI super app starter for viral content,
+        prompt generation, tools, and future earning systems.
+      </p>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <h3>Create Viral Video</h3>
+        <p>Generate ideas, scenes, prompts, and SEO structure for shorts and reels.</p>
+      </div>
+      <div class="card">
+        <h3>Earn Money</h3>
+        <p>Service ideas, creator offers, and future income systems for your platform.</p>
+      </div>
+      <div class="card">
+        <h3>AI Tools</h3>
+        <p>Prompt fixer, script improver, title ideas, and creator workflow support.</p>
+      </div>
+      <div class="card">
+        <h3>Build Website</h3>
+        <p>Grow your app with clean UI, deployment, and future Firebase integration.</p>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Viral Video Generator</h2>
+      <input id="idea" class="input" placeholder="Enter your video idea" value="Puppy saves a wedding with one emotional twist" />
+      <input id="platform" class="input" placeholder="Platform" value="YouTube Shorts" />
+      <textarea id="style" class="textarea" placeholder="Enter style">Emotional viral story, Indian setting, strong danger hook, one twist, victory ending</textarea>
+      <button class="button" onclick="generateOutput()">Generate</button>
+
+      <div id="result" class="output">Your generated content will appear here.</div>
+    </div>
+
+    <div class="section">
+      <h2>Sazio V3 Status</h2>
+      <div class="output">✅ Website live
+✅ GitHub connected
+✅ Vercel connected
+✅ Basic premium UI ready
+🔄 Next: Firebase + real AI + login system</div>
+    </div>
+
+    <div class="footer">
+      Sazio V3 • Powered for creators • Admin-ready future system
+    </div>
+  </div>
+
+  <script>
+    function generateOutput() {
+      const idea = document.getElementById("idea").value;
+      const platform = document.getElementById("platform").value;
+      const style = document.getElementById("style").value;
+
+      const output = `
+Title:
+${idea} | Viral ${platform} Story
+
+Scenes:
+1. Strong danger hook start
+2. Public reaction and emotional pressure
+3. Hero struggle moment
+4. Problem becomes bigger
+5. Hard work scene 1
+6. Hard work scene 2
+7. Twist reveal
+8. Victory ending with emotional reward
+
+Prompt Style:
+${style}
+
+SEO Tags:
+viral shorts, emotional story, indian viral video, youtube shorts, sazio ai, creator tools
+      `;
+
+      document.getElementById("result").innerText = output.trim();
+    }
+  </script>
 </body>
 </html>
