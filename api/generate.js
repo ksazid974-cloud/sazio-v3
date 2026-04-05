@@ -8,41 +8,65 @@ export default async function handler(req, res) {
       return res.status(500).json({ result: "API KEY NOT FOUND" });
     }
 
-    const { idea, type } = req.body || {};
+    const { idea, type, output } = req.body || {};
 
-    if (!idea) {
+    const safeIdea = typeof idea === "string" ? idea.trim() : "";
+    const safeType = typeof type === "string" && type.trim() ? type.trim() : "content";
+    const safeOutput =
+      typeof output === "string" && output.trim()
+        ? output.trim()
+        : "title, hook, script, SEO";
+
+    if (!safeIdea) {
       return res.status(400).json({ result: "Idea required" });
     }
 
     const prompt = `
-Reply in same language.
+Reply ONLY in the SAME language as the user's idea.
 
-STRICT:
-- No intro
-- No extra text
-- Short output
-- All sections must be included
+You are Sazio AI.
+Be practical, short, clean, and honest.
+No greeting.
+No intro.
+No fake claims.
+No empty bullets.
+Do not skip any section.
+Keep every line complete.
 
-FORMAT:
+User Idea: ${safeIdea}
+Content Type: ${safeType}
+User Wants: ${safeOutput}
+
+Return in EXACT format below:
 
 Title:
-- 3 strong titles
+- [short strong title]
+- [short strong title]
+- [short strong title]
 
 Hook:
-- 1 strong line
+- [1 complete strong hook line]
 
 Script:
-- 3 to 4 lines
+- [line 1]
+- [line 2]
+- [line 3]
 
 SEO:
-- 3 keywords
-- 3 hashtags
-- 1 caption
+Keywords: [3 short keywords]
+Hashtags: [3 short hashtags]
+Caption: [1 short caption]
 
 Analysis:
-- Score %
-- 1 strength
-- 1 weakness
+Score: [realistic percentage]
+Strength: [1 short point]
+Weakness: [1 short point]
+Improve: [1 short point]
+
+IMPORTANT:
+- Keep total response compact
+- Finish every sentence
+- Do not write anything outside this format
 `;
 
     const response = await fetch(
@@ -56,12 +80,12 @@ Analysis:
         body: JSON.stringify({
           contents: [
             {
-              parts: [{ text: idea + "\n\n" + prompt }]
+              parts: [{ text: prompt }]
             }
           ],
           generationConfig: {
-            temperature: 0.7,
-            maxOutputTokens: 500 // 🔥 cut fix
+            temperature: 0.6,
+            maxOutputTokens: 650
           }
         })
       }
@@ -69,15 +93,31 @@ Analysis:
 
     const data = await response.json();
 
-    let text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-
-    if (!text) {
-      return res.status(500).json({ result: "No response" });
+    if (!response.ok) {
+      return res.status(500).json({
+        result: "AI ERROR: " + JSON.stringify(data)
+      });
     }
 
-    return res.status(200).json({ result: text });
+    const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
 
-  } catch (e) {
-    return res.status(500).json({ result: "Error: " + e.message });
+    if (!text || !text.trim()) {
+      return res.status(500).json({
+        result: "No AI response"
+      });
+    }
+
+    const cleanText = text
+      .replace(/\n{3,}/g, "\n\n")
+      .replace(/[ \t]+\n/g, "\n")
+      .trim();
+
+    return res.status(200).json({
+      result: cleanText
+    });
+  } catch (error) {
+    return res.status(500).json({
+      result: "SERVER ERROR: " + error.message
+    });
   }
 }
