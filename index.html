@@ -3,30 +3,44 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sazio V3</title>
+<title>Sazio AI</title>
 
 <style>
-body {
+body{
   margin:0;
   font-family:Arial;
   background:linear-gradient(135deg,#0f172a,#020617);
   color:white;
+}
+
+.container{
+  max-width:900px;
+  margin:auto;
   padding:20px;
 }
 
-.container {
-  max-width:600px;
-  margin:auto;
+h1{
+  text-align:center;
+  font-size:32px;
 }
 
-.card {
+.hero{
+  text-align:center;
+  margin-bottom:20px;
+}
+
+.hero p{
+  color:#cbd5e1;
+}
+
+.card{
   background:rgba(255,255,255,0.05);
   padding:20px;
   border-radius:20px;
   margin-top:20px;
 }
 
-input,select,textarea {
+input,select,textarea{
   width:100%;
   padding:12px;
   margin-top:10px;
@@ -36,7 +50,7 @@ input,select,textarea {
   color:white;
 }
 
-button {
+button{
   width:100%;
   padding:14px;
   margin-top:12px;
@@ -47,35 +61,54 @@ button {
   font-weight:bold;
 }
 
-.result {
+.result{
   margin-top:20px;
   padding:15px;
   background:rgba(255,255,255,0.08);
   border-radius:15px;
   white-space:pre-line;
 }
-</style>
 
+.features{
+  margin-top:30px;
+}
+
+.feature{
+  margin-bottom:15px;
+  color:#cbd5e1;
+}
+
+.footer{
+  text-align:center;
+  margin-top:40px;
+  color:#94a3b8;
+}
+</style>
 </head>
+
 <body>
 
 <div class="container">
 
-<h1>Sazio V3</h1>
-<p>Create anything. Any idea. Any content.</p>
+<div class="hero">
+<h1>🚀 Sazio AI</h1>
+<p>Create viral content, scripts, hooks & SEO in seconds</p>
+</div>
 
 <div class="card">
 
 <h2>AI Content Generator</h2>
 
-<input id="idea" placeholder="Enter your idea">
+<input id="idea" placeholder="Enter your idea (e.g. money earning reel idea)">
+
 <select id="type">
-  <option value="video">Video</option>
-  <option value="post">Post</option>
-  <option value="ad">Ad</option>
+<option value="video">Video</option>
+<option value="post">Post</option>
+<option value="ad">Ad</option>
+<option value="story">Story</option>
 </select>
 
-<textarea id="goal" placeholder="What do you want?"></textarea>
+<textarea id="goal" placeholder="What do you want? (script, hooks, SEO, caption)"></textarea>
 
 <button onclick="generate()">Generate</button>
 
@@ -83,35 +116,54 @@ button {
 
 </div>
 
+<div class="features">
+
+<h2>✨ What Sazio Can Do</h2>
+
+<div class="feature">✔ Viral Titles & Hooks</div>
+<div class="feature">✔ YouTube Shorts & Reels Scripts</div>
+<div class="feature">✔ SEO Tags & Captions</div>
+<div class="feature">✔ Multi-purpose Content Creation</div>
+<div class="feature">✔ Fast AI Results</div>
+
+</div>
+
+<div class="card">
+
+<h2>💡 Example</h2>
+<p><b>Idea:</b> Poor boy success story</p>
+<p><b>Output:</b> Title + Hook + Script + SEO</p>
+
+</div>
+
+<div class="footer">
+Sazio AI • Smart Creator Tool • More features coming soon 🚀
+</div>
+
 </div>
 
 <script>
-async function generate() {
+async function generate(){
 
-  let idea = document.getElementById("idea").value;
-  let type = document.getElementById("type").value;
-  let goal = document.getElementById("goal").value;
+  let idea=document.getElementById("idea").value;
+  let type=document.getElementById("type").value;
+  let goal=document.getElementById("goal").value;
 
-  let box = document.getElementById("output");
-  box.innerHTML = "⏳ Generating with AI...";
+  let box=document.getElementById("output");
+  box.innerHTML="⏳ Generating...";
 
-  try {
-    let res = await fetch("/api/generate", {
+  try{
+    let res=await fetch("/api/generate",{
       method:"POST",
       headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({
-        idea:idea,
-        type:type,
-        output:goal
-      })
+      body:JSON.stringify({idea,type,output:goal})
     });
 
-    let data = await res.json();
+    let data=await res.json();
+    box.innerText=data.result||"No result";
 
-    box.innerText = data.result || "No result";
-
-  } catch(e) {
-    box.innerText = "Error connecting AI";
+  }catch(e){
+    box.innerText="Error connecting AI";
   }
 }
 </script>
