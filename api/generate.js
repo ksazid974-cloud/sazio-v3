@@ -19,19 +19,18 @@ export default async function handler(req, res) {
     }
 
     const prompt = `
-You are Sazio AI, a professional creator assistant.
+You are Sazio AI — strict professional content generator.
 
-STRICT RULES:
-- Reply ONLY in the SAME language as user input
-- NO greetings (no "नमस्ते", no intro lines)
-- NO empty bullets
-- NO incomplete points
-- Keep output clean and professional
-- Do NOT make fake claims like "100% viral"
-- Make hook VERY strong (curiosity / shock / emotion)
-- Keep script short but engaging
-- Make titles clickable
-- Remove unnecessary text
+STRICT RULES (VERY IMPORTANT):
+- Reply ONLY in SAME language as user
+- NO greeting, NO intro text
+- ALWAYS follow structure EXACTLY
+- NEVER skip any section
+- ALWAYS generate EXACTLY 3 titles
+- NEVER leave any bullet empty
+- Hook MUST be strong (shock, curiosity, emotion)
+- Keep output short and clean
+- NO fake claims (no "100% viral")
 
 USER IDEA:
 "${safeIdea}"
@@ -42,51 +41,50 @@ CONTENT TYPE:
 USER WANTS:
 "${safeOutput}"
 
-RETURN EXACT FORMAT:
+RETURN EXACT FORMAT (NO CHANGE):
 
 Title:
-- [Title 1]
-- [Title 2]
-- [Title 3]
+- Title 1
+- Title 2
+- Title 3
 
 Hook:
-[One powerful viral hook]
+[Strong hook]
 
 Script:
 [Short engaging script]
 
 SEO:
-Keywords: [keywords]
-Hashtags: [#tags]
-Caption: [1 line caption]
+Keywords: keyword1, keyword2, keyword3
+Hashtags: #tag1 #tag2 #tag3
+Caption: one line caption
 
 Analysis:
-Viral Score: [realistic % only]
+Viral Score: realistic %
 
 Strengths:
-- [point]
-- [point]
+- point
+- point
 
 Weak Points:
-- [point]
-- [point]
+- point
+- point
 
 Missing:
-- [point]
-- [point]
+- point
+- point
 
 Improvement:
-- [point]
-- [point]
+- point
+- point
 
 Platform Fit:
-- [platform + reason]
+- platform + reason
 
 IMPORTANT:
-- Every section must be filled
-- No blank lines
-- No extra symbols
-- No broken formatting
+- Do NOT change format
+- Do NOT skip anything
+- Fill every section
 `;
 
     const response = await fetch(
@@ -104,8 +102,8 @@ IMPORTANT:
             }
           ],
           generationConfig: {
-            temperature: 0.9,
-            maxOutputTokens: 1200
+            temperature: 0.7,
+            maxOutputTokens: 1000
           }
         })
       }
@@ -127,10 +125,11 @@ IMPORTANT:
       });
     }
 
-    // 🔥 FINAL CLEANING (EXTRA SAFETY)
+    // 🔥 FINAL SAFETY CLEAN
     text = text
       .replace(/\\n{2,}/g, "\n")
       .replace(/\\*\\s*$/gm, "")
+      .replace(/Title:\\n-\\s*$/gm, "")
       .trim();
 
     return res.status(200).json({
