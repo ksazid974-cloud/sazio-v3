@@ -19,17 +19,19 @@ export default async function handler(req, res) {
     }
 
     const prompt = `
-You are Sazio AI, an honest and practical creator assistant.
+You are Sazio AI, a professional creator assistant.
 
-CORE RULES:
-- Reply ONLY in the SAME language as the user's input.
-- Do NOT translate unless the user asks.
-- Do NOT make fake claims like "100% viral" or guaranteed success.
-- Give realistic, grounded, useful output.
-- Keep the writing clear, structured, and creator-friendly.
-- If something is weak, say it honestly.
-- If content has strengths, mention them honestly.
-- Keep formatting neat and easy to read.
+STRICT RULES:
+- Reply ONLY in the SAME language as user input
+- NO greetings (no "नमस्ते", no intro lines)
+- NO empty bullets
+- NO incomplete points
+- Keep output clean and professional
+- Do NOT make fake claims like "100% viral"
+- Make hook VERY strong (curiosity / shock / emotion)
+- Keep script short but engaging
+- Make titles clickable
+- Remove unnecessary text
 
 USER IDEA:
 "${safeIdea}"
@@ -40,46 +42,51 @@ CONTENT TYPE:
 USER WANTS:
 "${safeOutput}"
 
-RETURN OUTPUT IN THIS EXACT STRUCTURE:
+RETURN EXACT FORMAT:
 
 Title:
-[write 3 title ideas in short bullet style]
+- [Title 1]
+- [Title 2]
+- [Title 3]
 
 Hook:
-[write 1 strong hook]
+[One powerful viral hook]
 
 Script:
-[write a short usable script]
+[Short engaging script]
 
 SEO:
-[write keywords + hashtags + one short caption line]
+Keywords: [keywords]
+Hashtags: [#tags]
+Caption: [1 line caption]
 
 Analysis:
-Viral Score: [give realistic percentage only, no fake certainty]
+Viral Score: [realistic % only]
+
 Strengths:
-- [point 1]
-- [point 2]
+- [point]
+- [point]
 
 Weak Points:
-- [point 1]
-- [point 2]
+- [point]
+- [point]
 
 Missing:
-- [point 1]
-- [point 2]
+- [point]
+- [point]
 
 Improvement:
-- [point 1]
-- [point 2]
+- [point]
+- [point]
 
 Platform Fit:
-- [best platform]
-- [why]
+- [platform + reason]
 
 IMPORTANT:
-- Keep it practical
-- Keep it useful
-- Keep it honest
+- Every section must be filled
+- No blank lines
+- No extra symbols
+- No broken formatting
 `;
 
     const response = await fetch(
@@ -97,7 +104,7 @@ IMPORTANT:
             }
           ],
           generationConfig: {
-            temperature: 0.8,
+            temperature: 0.9,
             maxOutputTokens: 1200
           }
         })
@@ -112,7 +119,7 @@ IMPORTANT:
       });
     }
 
-    const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+    let text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
 
     if (!text || !text.trim()) {
       return res.status(500).json({
@@ -120,9 +127,16 @@ IMPORTANT:
       });
     }
 
+    // 🔥 FINAL CLEANING (EXTRA SAFETY)
+    text = text
+      .replace(/\\n{2,}/g, "\n")
+      .replace(/\\*\\s*$/gm, "")
+      .trim();
+
     return res.status(200).json({
-      result: text.trim()
+      result: text
     });
+
   } catch (error) {
     return res.status(500).json({
       result: "SERVER ERROR: " + error.message
