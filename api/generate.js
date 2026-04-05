@@ -27,137 +27,242 @@ export default async function handler(req, res) {
     }
 
     function detectTone(text) {
-      const lower = text.toLowerCase();
+      const t = text.toLowerCase();
+
       if (
-        lower.includes("sad") ||
-        lower.includes("emotional") ||
-        lower.includes("गरीब") ||
-        lower.includes("दर्द") ||
-        lower.includes("संघर्ष") ||
-        lower.includes("रो") ||
-        lower.includes("heart")
-      ) {
-        return "emotional";
-      }
-      if (
-        lower.includes("funny") ||
-        lower.includes("comedy") ||
-        lower.includes("मजेदार") ||
-        lower.includes("हास्य")
+        t.includes("funny") ||
+        t.includes("comedy") ||
+        t.includes("meme") ||
+        t.includes("मजेदार") ||
+        t.includes("कॉमेडी")
       ) {
         return "funny";
       }
+
       if (
-        lower.includes("motivation") ||
-        lower.includes("success") ||
-        lower.includes("सफलता") ||
-        lower.includes("मेहनत")
+        t.includes("motivation") ||
+        t.includes("success") ||
+        t.includes("inspire") ||
+        t.includes("मेहनत") ||
+        t.includes("सफलता") ||
+        t.includes("प्रेरणा")
       ) {
         return "motivational";
       }
+
+      if (
+        t.includes("dark") ||
+        t.includes("sad") ||
+        t.includes("emotional") ||
+        t.includes("गरीब") ||
+        t.includes("संघर्ष") ||
+        t.includes("दर्द") ||
+        t.includes("रोना")
+      ) {
+        return "emotional";
+      }
+
       return "general";
     }
 
-    function buildFallback(text) {
+    function wantsFullPack(text) {
+      const t = text.toLowerCase();
+      return (
+        t.includes("full") ||
+        t.includes("all") ||
+        t.includes("caption") ||
+        t.includes("thumbnail") ||
+        t.includes("hashtags") ||
+        t.includes("full pack") ||
+        t.includes("पूरा") ||
+        t.includes("सब कुछ")
+      );
+    }
+
+    function buildFallback(text, contentType, userWant) {
       const lang = detectLanguage(text);
       const tone = detectTone(text);
+      const fullPack = wantsFullPack(userWant);
 
       if (lang === "hi") {
-        let hook = "क्या आपने कभी सोचा है कि इस कहानी के पीछे कितनी तकलीफ और उम्मीद छिपी हो सकती है?";
-        let strength = "Idea emotional aur relatable hai.";
-        let weakness = "Hook aur zyada specific ho sakta hai.";
-        let improve = "Shuruaat me shock, danger, ya curiosity aur badhao.";
+        let hook = "क्या आपने कभी सोचा है कि इस idea के पीछे कितनी गहरी कहानी छिपी हो सकती है?";
         let score = "72%";
+        let strength = "Idea relatable aur emotional connection create karta hai.";
+        let weakness = "Hook aur specific ho sakta hai.";
+        let missing = "Strong curiosity ya stronger opening moment missing hai.";
+        let improve = "Shuruaat me shock, contrast, ya emotional twist badhao.";
+        let platformFit = "YouTube Shorts aur Instagram Reels ke liye better fit.";
 
         if (tone === "funny") {
-          hook = "एक छोटी सी बात कैसे मजेदार chaos में बदल सकती है, यही इस idea की ताकत है।";
-          strength = "Idea entertaining aur easy-to-watch hai.";
-          weakness = "Comedy point aur sharper ho sakta hai.";
-          improve = "Ek unexpected twist ya punchline aur jodo.";
-          score = "70%";
+          hook = "एक छोटी सी बात कैसे instant comedy chaos बन सकती है, यही इस content की ताकत है।";
+          score = "69%";
+          strength = "Idea entertaining aur fast-consumption friendly hai.";
+          weakness = "Punchline aur sharper ho sakti hai.";
+          missing = "Unexpected comic twist missing hai.";
+          improve = "Last line me funny reversal ya irony jodo.";
+          platformFit = "Instagram Reels aur Facebook short comedy format ke liye fit.";
         } else if (tone === "motivational") {
           hook = "जब हालात हार मानने को कहें, तभी असली कहानी शुरू होती है।";
-          strength = "Idea inspiring aur audience-friendly hai.";
-          weakness = "Outcome aur clear ho sakta hai.";
-          improve = "Ek strong before-after moment jodo.";
-          score = "74%";
+          score = "75%";
+          strength = "Idea inspiring aur emotionally strong hai.";
+          weakness = "Outcome aur clearer ho sakta hai.";
+          missing = "Before-after impact aur clear transformation missing hai.";
+          improve = "Result ko aur visible banao aur struggle ko sharper karo.";
+          platformFit = "YouTube Shorts aur motivational short videos ke liye strong fit.";
+        }
+
+        let extra = "";
+        if (fullPack) {
+          extra = `
+Caption: एक ऐसा idea जो सही presentation ke saath strong perform kar sakta hai.
+Hashtags: #viral #story #content
+Thumbnail: क्या आप इसकी सच्चाई जानते हैं?`;
         }
 
         return `Title:
 - ${text} की अनकही कहानी
 - ${text} का संघर्ष
-- ${text} से जुड़ी एक भावुक दास्तान
+- ${text} से जुड़ी एक असरदार दास्तान
 
 Hook:
 - ${hook}
 
 Script:
-- यह कहानी एक ऐसे मोड़ से शुरू होती है जो तुरंत ध्यान खींच सकती है।
-- बीच में संघर्ष, भावना और उम्मीद का तत्व इस idea को मजबूत बनाता है।
-- सही प्रस्तुति और बेहतर hook के साथ यह content अच्छा perform कर सकता है।
+- यह idea शुरुआत से ही ध्यान खींचने की क्षमता रखता है।
+- इसमें भावना, संघर्ष और curiosity का अच्छा blend बन सकता है।
+- बेहतर opening aur sharper payoff ke saath ye content aur strong perform karega.
 
 SEO:
-Keywords: ${text}, viral story, emotional content
-Hashtags: #story #viral #content
-Caption: एक ऐसी कहानी जो लोगों का ध्यान रोक सकती है।
+Keywords: ${text}, viral content, short video
+Hashtags: #viral #story #content
+Caption: एक ऐसा content idea जो लोगों का ध्यान रोक सकता है.
+${extra ? extra : ""}
 
 Analysis:
-Score: ${score}
-Strength: ${strength}
-Weakness: ${weakness}
-Improve: ${improve}`;
+Viral Score: ${score}
+Strengths:
+- ${strength}
+- Content short format me easily convert ho sakta hai.
+
+Weak Points:
+- ${weakness}
+- Hook abhi aur aggressive ho sakta hai.
+
+Missing:
+- ${missing}
+- Strong first 2 seconds ka visual ya line missing hai.
+
+Improvement:
+- ${improve}
+- Title me aur curiosity add karo.
+
+Platform Fit:
+- ${platformFit}
+- Short-form audience ke liye yeh zyada natural fit hai.`;
       }
 
       if (lang === "ar") {
+        let extra = "";
+        if (fullPack) {
+          extra = `
+Caption: فكرة مناسبة للمحتوى القصير إذا تم تقديمها بشكل أقوى.
+Hashtags: #ترند #قصة #محتوى
+Thumbnail: هل تعرف الحقيقة الكاملة؟`;
+        }
+
         return `Title:
 - القصة غير المروية عن ${text}
 - صراع ${text}
 - حكاية مؤثرة عن ${text}
 
 Hook:
-- هل فكرت يومًا كم الألم أو الأمل المخفي وراء ${text}؟
+- هل فكرت يومًا كم المشاعر أو الصراع المخفي وراء هذه الفكرة؟
 
 Script:
-- تبدأ هذه الفكرة بلحظة قادرة على جذب الانتباه بسرعة.
-- وجود الصراع والمشاعر يجعل الفكرة أقوى وأكثر قربًا من الناس.
-- مع افتتاحية أفضل يمكن أن يزداد تأثير هذا المحتوى بشكل واضح.
+- تبدأ هذه الفكرة بلحظة يمكنها جذب الانتباه بسرعة.
+- وجود الصراع أو الفضول يجعلها مناسبة للمحتوى القصير.
+- مع بداية أقوى ونهاية أوضح يمكن أن تؤدي بشكل أفضل.
 
 SEO:
-Keywords: ${text}, قصة مؤثرة, محتوى قصير
-Hashtags: #قصة #ترند #مؤثر
-Caption: فكرة بسيطة لكنها تحمل تأثيرًا قويًا.
+Keywords: ${text}, محتوى قصير, فكرة ترند
+Hashtags: #ترند #قصة #محتوى
+Caption: فكرة بسيطة لكنها قادرة على جذب الانتباه.
+${extra ? extra : ""}
 
 Analysis:
-Score: 72%
-Strength: الفكرة عاطفية وقريبة من الجمهور.
-Weakness: المقدمة تحتاج خصوصية أكبر.
-Improve: ابدأ بجملة أقوى فيها فضول أو صدمة.`;
+Viral Score: 72%
+Strengths:
+- الفكرة قريبة من الجمهور.
+- مناسبة للفيديوهات القصيرة.
+
+Weak Points:
+- الخطاف يحتاج أن يكون أقوى.
+- النهاية تحتاج وضوحًا أكبر.
+
+Missing:
+- عنصر فضول أقوى في البداية.
+- سبب أقوى للمشاهدة حتى النهاية.
+
+Improvement:
+- ابدأ بجملة أكثر صدمة أو فضولًا.
+- اجعل النتيجة أو التحول أوضح.
+
+Platform Fit:
+- يوتيوب شورتس وإنستغرام ريلز مناسبين أكثر.
+- الفكرة تناسب المحتوى السريع والقصير.`;
+      }
+
+      let extra = "";
+      if (fullPack) {
+        extra = `
+Caption: A simple idea that can perform better with stronger presentation.
+Hashtags: #viral #story #content
+Thumbnail: You won't expect this ending`;
       }
 
       return `Title:
 - The untold story of ${text}
 - The struggle behind ${text}
-- A powerful story about ${text}
+- A powerful short about ${text}
 
 Hook:
-- Have you ever thought about how much hidden struggle or emotion can exist behind ${text}?
+- Have you ever thought about how much hidden emotion or struggle can exist behind this idea?
 
 Script:
-- This idea starts with a moment that can quickly grab attention.
-- The struggle and emotion in the middle make the content more watchable.
-- With a stronger opening, this content can perform much better.
+- This idea can grab attention if it starts with a stronger opening moment.
+- The emotional or curiosity angle gives it short-form potential.
+- With a sharper payoff, it can perform better across short content platforms.
 
 SEO:
-Keywords: ${text}, viral story, emotional content
-Hashtags: #story #viral #content
-Caption: A simple idea that can connect with viewers.
+Keywords: ${text}, viral content, short video
+Hashtags: #viral #story #content
+Caption: A simple idea that can connect with viewers quickly.
+${extra ? extra : ""}
 
 Analysis:
-Score: 72%
-Strength: The idea is relatable and emotionally engaging.
-Weakness: The hook can be more specific.
-Improve: Start with stronger curiosity, danger, or surprise.`;
+Viral Score: 72%
+Strengths:
+- The idea is relatable.
+- It fits short-form content.
+
+Weak Points:
+- The hook can be more specific.
+- The ending can be stronger.
+
+Missing:
+- A stronger curiosity trigger at the start.
+- A more memorable payoff.
+
+Improvement:
+- Start with surprise, contrast, or emotion.
+- Make the title more curiosity-driven.
+
+Platform Fit:
+- Best fit for YouTube Shorts and Instagram Reels.
+- The format works better in fast, scroll-stopping content.`;
     }
+
+    const fullPack = wantsFullPack(safeOutput);
 
     const prompt = `
 Reply ONLY in the SAME language as the user's idea.
@@ -167,14 +272,14 @@ You are Sazio AI, an honest creator assistant.
 STRICT RULES:
 - No greeting
 - No intro
-- No fake promises like "100% viral"
+- No fake promise like "100% viral"
 - No placeholder text
 - No incomplete lines
-- Keep output compact, strong, and useful
-- Be realistic, not scammy
+- Keep output compact, real, and practical
 - Hook must be stronger than normal generic content
-- Titles should be clickable and emotionally or curiosity driven
-- Analysis should be honest and practical
+- Titles should be clickable, curiosity-driven, or emotional
+- Analysis must be honest, not scammy
+- Fill every section
 
 User idea: ${safeIdea}
 Content type: ${safeType}
@@ -199,12 +304,29 @@ SEO:
 Keywords: ...
 Hashtags: ...
 Caption: ...
+${fullPack ? "Thumbnail: ..." : ""}
 
 Analysis:
-Score: ...
-Strength: ...
-Weakness: ...
-Improve: ...
+Viral Score: ...
+Strengths:
+- ...
+- ...
+
+Weak Points:
+- ...
+- ...
+
+Missing:
+- ...
+- ...
+
+Improvement:
+- ...
+- ...
+
+Platform Fit:
+- ...
+- ...
 `;
 
     const response = await fetch(
@@ -223,7 +345,7 @@ Improve: ...
           ],
           generationConfig: {
             temperature: 0.55,
-            maxOutputTokens: 650
+            maxOutputTokens: 720
           }
         })
       }
@@ -233,7 +355,7 @@ Improve: ...
 
     if (response.status === 429) {
       return res.status(200).json({
-        result: buildFallback(safeIdea)
+        result: buildFallback(safeIdea, safeType, safeOutput)
       });
     }
 
@@ -247,7 +369,7 @@ Improve: ...
 
     if (!text || !text.trim()) {
       return res.status(200).json({
-        result: buildFallback(safeIdea)
+        result: buildFallback(safeIdea, safeType, safeOutput)
       });
     }
 
@@ -263,7 +385,7 @@ Improve: ...
 
     if (!text) {
       return res.status(200).json({
-        result: buildFallback(safeIdea)
+        result: buildFallback(safeIdea, safeType, safeOutput)
       });
     }
 
