@@ -10,46 +10,76 @@ export default async function handler(req, res) {
 
     const { idea, type, output } = req.body || {};
 
-    if (!idea || !idea.trim()) {
-      return res.status(400).json({ result: "Idea is required" });
-    }
-
+    const safeIdea = idea && idea.trim() ? idea.trim() : "";
     const safeType = type && type.trim() ? type.trim() : "content";
     const safeOutput = output && output.trim() ? output.trim() : "title, hook, script, SEO";
 
+    if (!safeIdea) {
+      return res.status(400).json({ result: "Idea is required" });
+    }
+
     const prompt = `
-You are Sazio AI, an honest creator assistant.
+You are Sazio AI, an honest and practical creator assistant.
 
-IMPORTANT RULES:
-- Reply in the SAME language as the user's input.
-- Do not claim guaranteed virality.
-- Be practical, grounded, and non-scammy.
-- Keep output clean, useful, and creator-friendly.
-- Do not use unnecessary long paragraphs.
+CORE RULES:
+- Reply ONLY in the SAME language as the user's input.
+- Do NOT translate unless the user asks.
+- Do NOT make fake claims like "100% viral" or guaranteed success.
+- Give realistic, grounded, useful output.
+- Keep the writing clear, structured, and creator-friendly.
+- If something is weak, say it honestly.
+- If content has strengths, mention them honestly.
+- Keep formatting neat and easy to read.
 
-User idea:
-"${idea}"
+USER IDEA:
+"${safeIdea}"
 
-Content type:
+CONTENT TYPE:
 "${safeType}"
 
-User wants:
+USER WANTS:
 "${safeOutput}"
 
-Return output in EXACT structure below:
+RETURN OUTPUT IN THIS EXACT STRUCTURE:
 
 Title:
+[write 3 title ideas in short bullet style]
+
 Hook:
+[write 1 strong hook]
+
 Script:
+[write a short usable script]
+
 SEO:
+[write keywords + hashtags + one short caption line]
 
 Analysis:
-Viral Score:
+Viral Score: [give realistic percentage only, no fake certainty]
 Strengths:
+- [point 1]
+- [point 2]
+
 Weak Points:
+- [point 1]
+- [point 2]
+
 Missing:
+- [point 1]
+- [point 2]
+
 Improvement:
+- [point 1]
+- [point 2]
+
 Platform Fit:
+- [best platform]
+- [why]
+
+IMPORTANT:
+- Keep it practical
+- Keep it useful
+- Keep it honest
 `;
 
     const response = await fetch(
@@ -68,7 +98,7 @@ Platform Fit:
           ],
           generationConfig: {
             temperature: 0.8,
-            maxOutputTokens: 900
+            maxOutputTokens: 1200
           }
         })
       }
@@ -98,4 +128,4 @@ Platform Fit:
       result: "SERVER ERROR: " + error.message
     });
   }
-  }
+}
