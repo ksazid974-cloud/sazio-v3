@@ -1,640 +1,120 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sazio V3</title>
-  <style>
-    * {
-      box-sizing: border-box;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sazio V3</title>
 
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: linear-gradient(135deg, #0f172a, #020617);
-      color: #ffffff;
-    }
+<style>
+body {
+  margin:0;
+  font-family:Arial;
+  background:linear-gradient(135deg,#0f172a,#020617);
+  color:white;
+  padding:20px;
+}
 
-    .container {
-      max-width: 1150px;
-      margin: auto;
-      padding: 20px;
-    }
+.container {
+  max-width:600px;
+  margin:auto;
+}
 
-    .hero {
-      text-align: center;
-      padding: 28px 16px;
-      margin-bottom: 20px;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 20px;
-    }
+.card {
+  background:rgba(255,255,255,0.05);
+  padding:20px;
+  border-radius:20px;
+  margin-top:20px;
+}
 
-    .badge {
-      display: inline-block;
-      background: #ffffff;
-      color: #0f172a;
-      font-size: 12px;
-      font-weight: bold;
-      padding: 8px 14px;
-      border-radius: 999px;
-      margin-bottom: 12px;
-    }
+input,select,textarea {
+  width:100%;
+  padding:12px;
+  margin-top:10px;
+  border-radius:10px;
+  border:none;
+  background:rgba(255,255,255,0.1);
+  color:white;
+}
 
-    .hero h1 {
-      margin: 0 0 10px;
-      font-size: 30px;
-    }
+button {
+  width:100%;
+  padding:14px;
+  margin-top:12px;
+  border:none;
+  border-radius:12px;
+  background:white;
+  color:black;
+  font-weight:bold;
+}
 
-    .hero p {
-      margin: 0;
-      color: #cbd5e1;
-      line-height: 1.6;
-      font-size: 16px;
-    }
+.result {
+  margin-top:20px;
+  padding:15px;
+  background:rgba(255,255,255,0.08);
+  border-radius:15px;
+  white-space:pre-line;
+}
+</style>
 
-    .grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 20px;
-    }
-
-    .panel {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 18px;
-      padding: 20px;
-    }
-
-    .panel h2 {
-      margin-top: 0;
-      margin-bottom: 16px;
-      font-size: 24px;
-    }
-
-    .panel p.small {
-      color: #cbd5e1;
-      margin-top: -4px;
-      margin-bottom: 16px;
-      line-height: 1.5;
-      font-size: 14px;
-    }
-
-    .input,
-    .textarea,
-    .select {
-      width: 100%;
-      padding: 13px 14px;
-      margin-top: 10px;
-      border-radius: 12px;
-      border: 1px solid rgba(255,255,255,0.08);
-      background: rgba(255,255,255,0.08);
-      color: #ffffff;
-      font-size: 15px;
-      outline: none;
-    }
-
-    .textarea {
-      min-height: 110px;
-      resize: vertical;
-    }
-
-    .select option {
-      color: #000000;
-    }
-
-    .button-row {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 10px;
-      margin-top: 14px;
-    }
-
-    .button {
-      padding: 13px 14px;
-      border: none;
-      border-radius: 12px;
-      cursor: pointer;
-      font-weight: bold;
-      font-size: 15px;
-    }
-
-    .button-primary {
-      background: #ffffff;
-      color: #0f172a;
-    }
-
-    .button-secondary {
-      background: rgba(255,255,255,0.1);
-      color: #ffffff;
-      border: 1px solid rgba(255,255,255,0.08);
-    }
-
-    .features {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
-      margin-top: 14px;
-    }
-
-    .feature-card {
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 14px;
-      padding: 14px;
-    }
-
-    .feature-card h3 {
-      margin: 0 0 8px;
-      font-size: 16px;
-    }
-
-    .feature-card p {
-      margin: 0;
-      color: #cbd5e1;
-      font-size: 13px;
-      line-height: 1.5;
-    }
-
-    .output-wrap {
-      margin-top: 18px;
-    }
-
-    .output-top {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      margin-bottom: 12px;
-    }
-
-    .status {
-      color: #cbd5e1;
-      font-size: 14px;
-    }
-
-    .result-scroll {
-      max-height: 75vh;
-      overflow-y: auto;
-      padding-right: 4px;
-    }
-
-    .block {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255,255,255,0.08);
-      padding: 15px;
-      border-radius: 14px;
-      margin-top: 10px;
-      line-height: 1.7;
-      color: #e5e7eb;
-    }
-
-    .block b {
-      color: #ffffff;
-    }
-
-    .placeholder {
-      color: #94a3b8;
-    }
-
-    .loading {
-      display: inline-block;
-      width: 18px;
-      height: 18px;
-      border: 2px solid rgba(255,255,255,0.35);
-      border-top-color: #ffffff;
-      border-radius: 50%;
-      animation: spin 0.9s linear infinite;
-      vertical-align: middle;
-      margin-right: 8px;
-    }
-
-    .footer {
-      margin-top: 24px;
-      text-align: center;
-      color: #94a3b8;
-      font-size: 13px;
-      padding-bottom: 10px;
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-    @media (min-width: 900px) {
-      .grid {
-        grid-template-columns: 0.95fr 1.05fr;
-      }
-
-      .button-row {
-        grid-template-columns: repeat(3, 1fr);
-      }
-
-      .output-top {
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: center;
-      }
-    }
-
-    @media (max-width: 640px) {
-      .hero h1 {
-        font-size: 26px;
-      }
-
-      .features {
-        grid-template-columns: 1fr;
-      }
-    }
-  </style>
 </head>
 <body>
-  <div class="container">
-    <div class="hero">
-      <div class="badge">SAZIO V3</div>
-      <h1>Create anything. Any idea. Any content.</h1>
-      <p>
-        A multi-purpose AI creator platform starter for videos, reels, ads, posts,
-        scripts, content ideas, hooks, scenes, and SEO.
-      </p>
-    </div>
 
-    <div class="grid">
-      <div class="panel">
-        <h2>AI Content Generator</h2>
-        <p class="small">
-          Enter your idea, choose content type, and tell Sazio what kind of result you want.
-        </p>
+<div class="container">
 
-        <input id="idea" class="input" placeholder="Enter your idea" />
+<h1>Sazio V3</h1>
+<p>Create anything. Any idea. Any content.</p>
 
-        <select id="type" class="select">
-          <option value="video">Video</option>
-          <option value="reel">Reel</option>
-          <option value="post">Post</option>
-          <option value="ad">Ad</option>
-          <option value="story">Story</option>
-          <option value="script">Script</option>
-        </select>
+<div class="card">
 
-        <textarea id="goal" class="textarea" placeholder="What do you want? (script, scenes, hooks, SEO, caption, full pack)"></textarea>
+<h2>AI Content Generator</h2>
 
-        <div class="button-row">
-          <button id="generateBtn" class="button button-primary" onclick="generate()">Generate</button>
-          <button class="button button-secondary" onclick="copyResult()">Copy Result</button>
-          <button class="button button-secondary" onclick="clearAll()">Clear</button>
-        </div>
+<input id="idea" placeholder="Enter your idea">
+<select id="type">
+  <option value="video">Video</option>
+  <option value="post">Post</option>
+  <option value="ad">Ad</option>
+</select>
 
-        <div class="features">
-          <div class="feature-card">
-            <h3>Multi-purpose</h3>
-            <p>Works for many content types, not tied to one niche.</p>
-          </div>
-          <div class="feature-card">
-            <h3>Smart Output</h3>
-            <p>Changes angle, hook, and CTA based on idea and content type.</p>
-          </div>
-          <div class="feature-card">
-            <h3>Structured Result</h3>
-            <p>Gives titles, concept, hook, script flow, CTA, and SEO tags.</p>
-          </div>
-          <div class="feature-card">
-            <h3>Pro UX</h3>
-            <p>Loading state, better feedback, clean result sections, and mobile polish.</p>
-          </div>
-        </div>
-      </div>
+<textarea id="goal" placeholder="What do you want?"></textarea>
 
-      <div class="panel">
-        <h2>Generated Result</h2>
+<button onclick="generate()">Generate</button>
 
-        <div class="output-wrap">
-          <div class="output-top">
-            <div class="status">Smart generator active</div>
-            <div class="status" id="resultLabel">Waiting for input...</div>
-          </div>
+<div id="output" class="result">Your result will appear here...</div>
 
-          <div id="output" class="result-scroll">
-            <div class="block placeholder">Your generated content will appear here.</div>
-          </div>
-        </div>
-      </div>
-    </div>
+</div>
 
-    <div class="footer">
-      Sazio V3 • Phase 7 UX Upgrade • Multi-purpose Creator Platform
-    </div>
-  </div>
+</div>
 
-  <script>
-    function safeValue(value, fallback) {
-      return value && value.trim() ? value.trim() : fallback;
-    }
+<script>
+async function generate() {
 
-    function randomPick(arr) {
-      return arr[Math.floor(Math.random() * arr.length)];
-    }
+  let idea = document.getElementById("idea").value;
+  let type = document.getElementById("type").value;
+  let goal = document.getElementById("goal").value;
 
-    function detectMode(idea, type, goal) {
-      const text = (idea + " " + type + " " + goal).toLowerCase();
+  let box = document.getElementById("output");
+  box.innerHTML = "⏳ Generating with AI...";
 
-      if (text.includes("gym") || text.includes("fitness") || text.includes("workout") || text.includes("body")) {
-        return "fitness";
-      }
-      if (text.includes("travel") || text.includes("trip") || text.includes("tour") || text.includes("vlog")) {
-        return "travel";
-      }
-      if (text.includes("product") || text.includes("brand") || text.includes("ad") || text.includes("marketing")) {
-        return "product";
-      }
-      if (text.includes("comedy") || text.includes("funny") || text.includes("meme")) {
-        return "comedy";
-      }
-      if (text.includes("horror") || text.includes("scary") || text.includes("thriller")) {
-        return "horror";
-      }
-      if (text.includes("story") || text.includes("drama") || text.includes("film")) {
-        return "story";
-      }
-      return "general";
-    }
+  try {
+    let res = await fetch("/api/generate", {
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({
+        idea:idea,
+        type:type,
+        output:goal
+      })
+    });
 
-    function buildTypeSpecificBlock(type, idea) {
-      if (type === "post") {
-        return `
-          <div class="block"><b>📱 CAPTION IDEA</b><br>
-            Create a short, attention-grabbing caption around ${idea} that feels clear and shareable.
-          </div>
-          <div class="block"><b>🏷 HASHTAG DIRECTION</b><br>
-            Use a mix of broad and niche hashtags based on ${idea} for better discoverability.
-          </div>
-        `;
-      }
+    let data = await res.json();
 
-      if (type === "ad") {
-        return `
-          <div class="block"><b>💰 AD COPY DIRECTION</b><br>
-            Start with a pain point, present the benefit, then close with a direct action.
-          </div>
-          <div class="block"><b>📢 SALES CTA</b><br>
-            Use a clear call to action like try now, check now, or learn more.
-          </div>
-        `;
-      }
+    box.innerText = data.result || "No result";
 
-      if (type === "story") {
-        return `
-          <div class="block"><b>📖 STORY FLOW</b><br>
-            Beginning → build curiosity → key turn → strong ending.
-          </div>
-          <div class="block"><b>🎭 STORY TONE</b><br>
-            Keep the storytelling easy to follow, visual, and engaging.
-          </div>
-        `;
-      }
+  } catch(e) {
+    box.innerText = "Error connecting AI";
+  }
+}
+</script>
 
-      if (type === "script") {
-        return `
-          <div class="block"><b>📝 SCRIPT DIRECTION</b><br>
-            Write in a clear flow: hook, setup, value, highlight, and ending.
-          </div>
-          <div class="block"><b>🎤 DELIVERY STYLE</b><br>
-            Keep the wording natural, sharp, and audience-friendly.
-          </div>
-        `;
-      }
-
-      return `
-        <div class="block"><b>🎬 SCRIPT STRUCTURE</b><br>
-          1. Hook in the first 3 seconds<br>
-          2. Introduce the main idea clearly<br>
-          3. Build value, curiosity, or emotion<br>
-          4. Deliver the main highlight<br>
-          5. End with a strong close
-        </div>
-
-        <div class="block"><b>🧩 CONTENT FLOW</b><br>
-          Step 1: Attention-grabbing opening<br>
-          Step 2: Introduce ${idea}<br>
-          Step 3: Main development or message<br>
-          Step 4: Highlight / reveal<br>
-          Step 5: Final engagement push
-        </div>
-      `;
-    }
-
-    function setLoadingState(isLoading) {
-      const btn = document.getElementById("generateBtn");
-      const label = document.getElementById("resultLabel");
-
-      if (isLoading) {
-        btn.disabled = true;
-        btn.innerHTML = '<span class="loading"></span>Generating...';
-        label.innerText = 'Generating result...';
-      } else {
-        btn.disabled = false;
-        btn.innerText = 'Generate';
-      }
-    }
-
-    function buildResult() {
-      const idea = safeValue(document.getElementById("idea").value, "content idea");
-      const type = safeValue(document.getElementById("type").value, "video");
-      const goal = safeValue(document.getElementById("goal").value, "script, hooks, structure, and SEO");
-      const mode = detectMode(idea, type, goal);
-
-      const library = {
-        general: {
-          hooks: [
-            `Start with a curiosity-driven opening around ${idea}.`,
-            `Open with a surprising statement about ${idea}.`,
-            `Use a fast hook that makes people stop scrolling.`
-          ],
-          angles: [
-            `Keep the ${type} simple, clear, and highly engaging.`,
-            `Make the content easy to understand and easy to consume.`,
-            `Focus on clarity, pacing, and retention.`
-          ],
-          ctas: [
-            `Ask viewers what they think in the comments.`,
-            `End with a reason to follow for more content.`,
-            `Invite the audience to share their opinion.`
-          ]
-        },
-        fitness: {
-          hooks: [
-            `Start with an intense challenge or transformation moment.`,
-            `Open with visible effort and strong physical energy.`,
-            `Lead with a motivational problem-to-progress hook.`
-          ],
-          angles: [
-            `Keep the content energetic, focused, and motivational.`,
-            `Show discipline, effort, and visible progress.`,
-            `Make the pacing fast and action-driven.`
-          ],
-          ctas: [
-            `Ask viewers about their current fitness goal.`,
-            `End with a challenge for the audience.`,
-            `Tell viewers to save this for motivation.`
-          ]
-        },
-        travel: {
-          hooks: [
-            `Start with the most beautiful or unexpected moment.`,
-            `Open with a destination shot that creates instant curiosity.`,
-            `Make viewers feel they are already inside the experience.`
-          ],
-          angles: [
-            `Keep the content immersive, scenic, and discovery-driven.`,
-            `Use curiosity, movement, and atmosphere.`,
-            `Focus on beauty, journey, and memorable details.`
-          ],
-          ctas: [
-            `Ask viewers where they want to go next.`,
-            `Tell viewers to save this travel idea.`,
-            `Invite comments about their dream destination.`
-          ]
-        },
-        product: {
-          hooks: [
-            `Start with a problem this product solves immediately.`,
-            `Lead with a before-vs-after result.`,
-            `Open with the strongest benefit first.`
-          ],
-          angles: [
-            `Keep the message clear, benefit-focused, and trust-first.`,
-            `Show value in a practical and convincing way.`,
-            `Make the content useful, not overly salesy.`
-          ],
-          ctas: [
-            `End with a clear try-now action.`,
-            `Ask viewers if they would use this.`,
-            `Invite users to learn more or check details.`
-          ]
-        },
-        comedy: {
-          hooks: [
-            `Start with an awkward or funny surprise moment.`,
-            `Open with a fast punchline setup.`,
-            `Create instant curiosity with a weird situation.`
-          ],
-          angles: [
-            `Keep it fast, punchy, and expressive.`,
-            `Focus on timing and surprise payoff.`,
-            `Make the content light and highly relatable.`
-          ],
-          ctas: [
-            `Ask viewers to tag a friend.`,
-            `Invite laughing reactions in comments.`,
-            `End with a funny callback.`
-          ]
-        },
-        horror: {
-          hooks: [
-            `Start with mystery, tension, and discomfort.`,
-            `Open with silence and a strange detail.`,
-            `Create fear through uncertainty in the first few seconds.`
-          ],
-          angles: [
-            `Keep the pacing suspenseful and controlled.`,
-            `Build tension step by step.`,
-            `Focus on mystery and unsettling curiosity.`
-          ],
-          ctas: [
-            `Ask viewers what they would do next.`,
-            `End with a creepy question.`,
-            `Invite comments on the scariest moment.`
-          ]
-        },
-        story: {
-          hooks: [
-            `Start with a turning point or emotional moment.`,
-            `Open with a situation that instantly creates curiosity.`,
-            `Show the most important tension first.`
-          ],
-          angles: [
-            `Keep the storytelling simple, strong, and easy to follow.`,
-            `Focus on narrative clarity and emotional flow.`,
-            `Build a clear beginning, middle, and end.`
-          ],
-          ctas: [
-            `Ask viewers what should happen next.`,
-            `Invite the audience to share their version.`,
-            `End with a line that drives engagement.`
-          ]
-        }
-      };
-
-      const selected = library[mode];
-      const hook = randomPick(selected.hooks);
-      const angle = randomPick(selected.angles);
-      const cta = randomPick(selected.ctas);
-      const typeSpecificBlock = buildTypeSpecificBlock(type, idea);
-
-      return `
-        <div class="block"><b>🔥 TITLE IDEAS</b><br>
-          1. Viral ${type} about ${idea}<br>
-          2. Best ${idea} ${type} idea for today<br>
-          3. ${idea} that people will actually watch
-        </div>
-
-        <div class="block"><b>💡 CONTENT ANGLE</b><br>
-          ${angle}
-        </div>
-
-        <div class="block"><b>🎣 HOOK</b><br>
-          ${hook}
-        </div>
-
-        ${typeSpecificBlock}
-
-        <div class="block"><b>🎯 USER GOAL</b><br>
-          ${goal}
-        </div>
-
-        <div class="block"><b>📢 CTA</b><br>
-          ${cta}
-        </div>
-
-        <div class="block"><b>🚀 SEO TAGS</b><br>
-          ${idea}, ${type}, viral, trending, creator tools, sazio
-        </div>
-      `;
-    }
-
-    function generate() {
-      setLoadingState(true);
-
-      setTimeout(function() {
-        const resultHtml = buildResult();
-        document.getElementById("output").innerHTML = resultHtml;
-        document.getElementById("resultLabel").innerText = "Result generated successfully";
-        setLoadingState(false);
-      }, 700);
-    }
-
-    function copyResult() {
-      const output = document.getElementById("output").innerText.trim();
-      if (!output || output === "Your generated content will appear here.") {
-        document.getElementById("resultLabel").innerText = "Generate result first";
-        return;
-      }
-
-      navigator.clipboard.writeText(output).then(function () {
-        document.getElementById("resultLabel").innerText = "Result copied";
-      }).catch(function () {
-        document.getElementById("resultLabel").innerText = "Copy failed";
-      });
-    }
-
-    function clearAll() {
-      document.getElementById("idea").value = "";
-      document.getElementById("type").value = "video";
-      document.getElementById("goal").value = "";
-      document.getElementById("output").innerHTML =
-        '<div class="block placeholder">Your generated content will appear here.</div>';
-      document.getElementById("resultLabel").innerText = "Cleared";
-    }
-  </script>
 </body>
 </html>
