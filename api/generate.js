@@ -1,10 +1,8 @@
-export default async function handler(req, res) {
-  if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method not allowed" });
-  }
+export const runtime = "edge";
 
+export default async function handler(req) {
   try {
-    const { idea, type } = req.body;
+    const { idea, type } = await req.json();
 
     const prompt = `
 Create ${type} content for:
@@ -32,11 +30,15 @@ Include:
 
     const result =
       data?.candidates?.[0]?.content?.parts?.[0]?.text ||
-      "No AI response";
+      JSON.stringify(data);
 
-    res.status(200).json({ result });
+    return new Response(JSON.stringify({ result }), {
+      headers: { "Content-Type": "application/json" },
+    });
 
   } catch (e) {
-    res.status(500).json({ error: "Server error" });
+    return new Response(JSON.stringify({ result: "Server error" }), {
+      headers: { "Content-Type": "application/json" },
+    });
   }
 }
