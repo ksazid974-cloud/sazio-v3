@@ -11,20 +11,30 @@ export default async function handler(req, res) {
     const { idea, type, output } = req.body || {};
 
     const prompt = `
-You are Sazio AI.
+You are a WORLD-CLASS viral content creator like top YouTubers.
 
-Create high-quality ${type || "video"} content for:
+Create HIGHLY VIRAL ${type || "video"} content for:
 "${idea || "content idea"}"
 
 User wants:
-${output || "title, hook, script, SEO"}
+${output || "full viral content"}
 
-Return clearly in this format:
-1. Title Ideas
-2. Hook
-3. Content Angle
-4. Short Script
-5. SEO Tags
+Rules:
+- Hook must grab attention in first 3 seconds
+- Titles must be clickbait + curiosity based
+- Script should be emotional + engaging
+- Add psychological triggers (money, fear, curiosity, surprise)
+- Make content feel like 10M+ views potential
+
+Output format:
+
+🔥 Title Ideas (5)
+💡 Content Angle
+🎯 Hook (very strong)
+🎬 Script (short viral format)
+📈 SEO Tags (high search keywords)
+
+Make it addictive and share-worthy.
 `;
 
     const response = await fetch(
@@ -62,6 +72,7 @@ Return clearly in this format:
     }
 
     return res.status(200).json({ result: text });
+
   } catch (error) {
     return res.status(500).json({
       result: "SERVER ERROR: " + error.message
