@@ -1,172 +1,338 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sazio AI</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sazio AI</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
 
-<style>
-body{
-  margin:0;
-  font-family:Arial;
-  background:linear-gradient(135deg,#0f172a,#020617);
-  color:white;
-}
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #0f172a, #020617);
+      color: #ffffff;
+    }
 
-.container{
-  max-width:900px;
-  margin:auto;
-  padding:20px;
-}
+    .container {
+      max-width: 980px;
+      margin: auto;
+      padding: 20px;
+    }
 
-h1{
-  text-align:center;
-  font-size:32px;
-}
+    .hero {
+      text-align: center;
+      padding: 28px 18px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 22px;
+      margin-bottom: 20px;
+    }
 
-.hero{
-  text-align:center;
-  margin-bottom:20px;
-}
+    .badge {
+      display: inline-block;
+      background: #ffffff;
+      color: #0f172a;
+      font-size: 12px;
+      font-weight: bold;
+      padding: 8px 14px;
+      border-radius: 999px;
+      margin-bottom: 12px;
+    }
 
-.hero p{
-  color:#cbd5e1;
-}
+    .hero h1 {
+      margin: 0 0 10px;
+      font-size: 34px;
+    }
 
-.card{
-  background:rgba(255,255,255,0.05);
-  padding:20px;
-  border-radius:20px;
-  margin-top:20px;
-}
+    .hero p {
+      margin: 0;
+      color: #cbd5e1;
+      line-height: 1.6;
+      font-size: 16px;
+    }
 
-input,select,textarea{
-  width:100%;
-  padding:12px;
-  margin-top:10px;
-  border-radius:10px;
-  border:none;
-  background:rgba(255,255,255,0.1);
-  color:white;
-}
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
 
-button{
-  width:100%;
-  padding:14px;
-  margin-top:12px;
-  border:none;
-  border-radius:12px;
-  background:white;
-  color:black;
-  font-weight:bold;
-}
+    .card {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 20px;
+      padding: 20px;
+    }
 
-.result{
-  margin-top:20px;
-  padding:15px;
-  background:rgba(255,255,255,0.08);
-  border-radius:15px;
-  white-space:pre-line;
-}
+    .card h2 {
+      margin-top: 0;
+      margin-bottom: 12px;
+      font-size: 24px;
+    }
 
-.features{
-  margin-top:30px;
-}
+    .subtext {
+      color: #cbd5e1;
+      line-height: 1.5;
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
 
-.feature{
-  margin-bottom:15px;
-  color:#cbd5e1;
-}
+    input, select, textarea {
+      width: 100%;
+      padding: 13px 14px;
+      margin-top: 10px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.08);
+      color: #ffffff;
+      font-size: 15px;
+      outline: none;
+    }
 
-.footer{
-  text-align:center;
-  margin-top:40px;
-  color:#94a3b8;
-}
-</style>
+    select option {
+      color: #000000;
+    }
+
+    textarea {
+      min-height: 110px;
+      resize: vertical;
+    }
+
+    .button-row {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 15px;
+    }
+
+    .primary {
+      background: #ffffff;
+      color: #0f172a;
+    }
+
+    .secondary {
+      background: rgba(255,255,255,0.1);
+      color: #ffffff;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .result-wrap {
+      margin-top: 14px;
+    }
+
+    .status {
+      color: #cbd5e1;
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+
+    .result {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px;
+      padding: 16px;
+      white-space: pre-line;
+      line-height: 1.7;
+      min-height: 140px;
+    }
+
+    .features {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    .feature {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 14px;
+      padding: 14px;
+    }
+
+    .feature b {
+      display: block;
+      margin-bottom: 6px;
+      color: #ffffff;
+    }
+
+    .feature span {
+      color: #cbd5e1;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .example {
+      color: #cbd5e1;
+      line-height: 1.7;
+      font-size: 15px;
+    }
+
+    .trust {
+      margin-top: 20px;
+      text-align: center;
+      color: #94a3b8;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .footer {
+      margin-top: 30px;
+      text-align: center;
+      color: #94a3b8;
+      font-size: 13px;
+      padding-bottom: 10px;
+    }
+
+    @media (min-width: 900px) {
+      .grid {
+        grid-template-columns: 1.08fr 0.92fr;
+      }
+
+      .button-row {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .features {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+  </style>
 </head>
-
 <body>
+  <div class="container">
+    <div class="hero">
+      <div class="badge">100% FREE</div>
+      <h1>🚀 Sazio AI</h1>
+      <p>
+        Create viral content, strong hooks, scripts, captions, and SEO in seconds.
+        Fast, simple, and built for creators.
+      </p>
+    </div>
 
-<div class="container">
+    <div class="grid">
+      <div class="card">
+        <h2>Generate Content</h2>
+        <div class="subtext">
+          Enter your idea, select content type, and get an instant AI result.
+        </div>
 
-<div class="hero">
-<h1>🚀 Sazio AI</h1>
-<p>Create viral content, scripts, hooks & SEO in seconds</p>
-</div>
+        <input id="idea" placeholder="Enter your idea" />
 
-<div class="card">
+        <select id="type">
+          <option value="video">Video</option>
+          <option value="post">Post</option>
+          <option value="story">Story</option>
+          <option value="ad">Ad</option>
+        </select>
 
-<h2>AI Content Generator</h2>
+        <textarea id="goal" placeholder="What do you want? (script, hook, SEO, caption)"></textarea>
 
-<input id="idea" placeholder="Enter your idea (e.g. money earning reel idea)">
+        <div class="button-row">
+          <button class="primary" onclick="generate()">Generate</button>
+          <button class="secondary" onclick="copyText()">Copy Result</button>
+        </div>
 
-<select id="type">
-<option value="video">Video</option>
-<option value="post">Post</option>
-<option value="ad">Ad</option>
-<option value="story">Story</option>
-</select>
+        <div class="result-wrap">
+          <div class="status" id="status">Ready</div>
+          <div id="output" class="result">Your result will appear here...</div>
+        </div>
+      </div>
 
-<textarea id="goal" placeholder="What do you want? (script, hooks, SEO, caption)"></textarea>
+      <div class="card">
+        <h2>What Sazio Can Do</h2>
+        <div class="features">
+          <div class="feature">
+            <b>Viral Titles & Hooks</b>
+            <span>Get attention-grabbing content ideas built for high retention.</span>
+          </div>
+          <div class="feature">
+            <b>Scripts & Story Flow</b>
+            <span>Create usable script structure for reels, shorts, posts, and stories.</span>
+          </div>
+          <div class="feature">
+            <b>SEO & Captions</b>
+            <span>Generate content-ready captions, search-friendly output, and better packaging.</span>
+          </div>
+          <div class="feature">
+            <b>Simple & Fast</b>
+            <span>No login required. Just enter an idea and generate instantly.</span>
+          </div>
+        </div>
+      </div>
+    </div>
 
-<button onclick="generate()">Generate</button>
+    <div class="card">
+      <h2>Example</h2>
+      <div class="example">
+        <b>Idea:</b> Poor boy success story<br>
+        <b>Type:</b> Story<br>
+        <b>Output:</b> Title + Hook + Script + SEO
+      </div>
+    </div>
 
-<div id="output" class="result">Your result will appear here...</div>
+    <div class="trust">
+      Safe AI creator tool • Multi-purpose content generation • Built for fast creation
+    </div>
 
-</div>
+    <div class="footer">
+      Sazio AI • Free Creator Tool • More upgrades coming soon
+    </div>
+  </div>
 
-<div class="features">
+  <script>
+    async function generate() {
+      const idea = document.getElementById("idea").value;
+      const type = document.getElementById("type").value;
+      const goal = document.getElementById("goal").value;
 
-<h2>✨ What Sazio Can Do</h2>
+      const box = document.getElementById("output");
+      const status = document.getElementById("status");
 
-<div class="feature">✔ Viral Titles & Hooks</div>
-<div class="feature">✔ YouTube Shorts & Reels Scripts</div>
-<div class="feature">✔ SEO Tags & Captions</div>
-<div class="feature">✔ Multi-purpose Content Creation</div>
-<div class="feature">✔ Fast AI Results</div>
+      status.innerText = "Generating...";
+      box.innerText = "⏳ Generating...";
 
-</div>
+      try {
+        const res = await fetch("/api/generate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            idea: idea,
+            type: type,
+            output: goal
+          })
+        });
 
-<div class="card">
+        const data = await res.json();
+        box.innerText = data.result || "No result";
+        status.innerText = "Done";
+      } catch (e) {
+        box.innerText = "Error connecting AI";
+        status.innerText = "Error";
+      }
+    }
 
-<h2>💡 Example</h2>
-<p><b>Idea:</b> Poor boy success story</p>
-<p><b>Output:</b> Title + Hook + Script + SEO</p>
-
-</div>
-
-<div class="footer">
-Sazio AI • Smart Creator Tool • More features coming soon 🚀
-</div>
-
-</div>
-
-<script>
-async function generate(){
-
-  let idea=document.getElementById("idea").value;
-  let type=document.getElementById("type").value;
-  let goal=document.getElementById("goal").value;
-
-  let box=document.getElementById("output");
-  box.innerHTML="⏳ Generating...";
-
-  try{
-    let res=await fetch("/api/generate",{
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({idea,type,output:goal})
-    });
-
-    let data=await res.json();
-    box.innerText=data.result||"No result";
-
-  }catch(e){
-    box.innerText="Error connecting AI";
-  }
-}
-</script>
-
+    function copyText() {
+      const text = document.getElementById("output").innerText;
+      navigator.clipboard.writeText(text).then(function () {
+        document.getElementById("status").innerText = "Copied";
+      }).catch(function () {
+        document.getElementById("status").innerText = "Copy failed";
+      });
+    }
+  </script>
 </body>
 </html>
