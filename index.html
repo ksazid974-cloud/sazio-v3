@@ -241,8 +241,7 @@
       <div class="panel">
         <h2>AI Content Generator</h2>
         <p class="small">
-          Enter your idea and choose what kind of content you want. Sazio will generate
-          a structured result for that specific use case.
+          Enter your idea, choose content type, and tell Sazio what kind of result you want.
         </p>
 
         <input id="idea" class="input" placeholder="Enter your idea" />
@@ -250,13 +249,13 @@
         <select id="type" class="select">
           <option value="video">Video</option>
           <option value="reel">Reel</option>
+          <option value="post">Post</option>
           <option value="ad">Ad</option>
           <option value="story">Story</option>
-          <option value="post">Post</option>
           <option value="script">Script</option>
         </select>
 
-        <textarea id="goal" class="textarea" placeholder="What do you want? (script, scenes, hooks, SEO, full pack)"></textarea>
+        <textarea id="goal" class="textarea" placeholder="What do you want? (script, scenes, hooks, SEO, caption, full pack)"></textarea>
 
         <div class="button-row">
           <button class="button button-primary" onclick="generate()">Generate</button>
@@ -267,25 +266,26 @@
         <div class="features">
           <div class="feature-card">
             <h3>Multi-purpose</h3>
-            <p>Works for different content types, not locked to one niche or theme.</p>
+            <p>Works for many content types, not tied to one niche.</p>
           </div>
           <div class="feature-card">
-            <h3>Smart Logic</h3>
-            <p>Detects broad content intent and adjusts hook, angle, and CTA.</p>
+            <h3>Smart Output</h3>
+            <p>Changes angle, hook, and CTA based on idea and content type.</p>
           </div>
           <div class="feature-card">
-            <h3>Structured Output</h3>
-            <p>Titles, hook, content angle, script flow, scenes, CTA, and SEO tags.</p>
+            <h3>Structured Result</h3>
+            <p>Gives titles, concept, hook, script flow, CTA, and SEO tags.</p>
           </div>
           <div class="feature-card">
-            <h3>Mobile Ready</h3>
-            <p>Clean interface designed to work smoothly on mobile and laptop.</p>
+            <h3>Mobile Friendly</h3>
+            <p>Clean layout for phone and laptop both.</p>
           </div>
         </div>
       </div>
 
       <div class="panel">
         <h2>Generated Result</h2>
+
         <div class="output-wrap">
           <div class="output-top">
             <div class="status">Smart generator active</div>
@@ -300,7 +300,7 @@
     </div>
 
     <div class="footer">
-      Sazio V3 • Frontend Consolidated Merge • Multi-purpose Creator Platform
+      Sazio V3 • Smart Frontend Generator • Multi-purpose Creator Platform
     </div>
   </div>
 
@@ -337,10 +337,63 @@
       return "general";
     }
 
+    function buildTypeSpecificBlock(type, idea) {
+      if (type === "post") {
+        return `
+          <div class="block"><b>📱 CAPTION IDEA</b><br>
+            Here is a strong post caption angle for ${idea}: make it short, clear, and highly engaging.
+          </div>
+          <div class="block"><b>🏷 HASHTAG DIRECTION</b><br>
+            Use a mix of niche + broad tags around ${idea} for better reach.
+          </div>
+        `;
+      }
+
+      if (type === "ad") {
+        return `
+          <div class="block"><b>💰 AD COPY DIRECTION</b><br>
+            Start with a pain point, show the benefit, then close with a simple action.
+          </div>
+          <div class="block"><b>📢 SALES CTA</b><br>
+            Push a clear action like try now, check now, or learn more.
+          </div>
+        `;
+      }
+
+      if (type === "story") {
+        return `
+          <div class="block"><b>📖 STORY FLOW</b><br>
+            Beginning → build curiosity → emotional or logical turn → strong ending.
+          </div>
+          <div class="block"><b>🎭 STORY TONE</b><br>
+            Keep the flow simple, engaging, and easy to visualize.
+          </div>
+        `;
+      }
+
+      return `
+        <div class="block"><b>🎬 SCRIPT STRUCTURE</b><br>
+          1. Hook in the first 3 seconds<br>
+          2. Introduce the main idea clearly<br>
+          3. Build value, curiosity, or emotion<br>
+          4. Deliver the main highlight<br>
+          5. End with a strong close
+        </div>
+
+        <div class="block"><b>🧩 CONTENT FLOW</b><br>
+          Step 1: Attention-grabbing opening<br>
+          Step 2: Introduce ${idea}<br>
+          Step 3: Main development or message<br>
+          Step 4: Highlight / reveal<br>
+          Step 5: Final engagement push
+        </div>
+      `;
+    }
+
     function generate() {
       const idea = safeValue(document.getElementById("idea").value, "content idea");
       const type = safeValue(document.getElementById("type").value, "video");
-      const goal = safeValue(document.getElementById("goal").value, "script, scenes, hooks, and SEO");
+      const goal = safeValue(document.getElementById("goal").value, "script, hooks, structure, and SEO");
       const mode = detectMode(idea, type, goal);
 
       const library = {
@@ -469,6 +522,7 @@
       const hook = randomPick(selected.hooks);
       const angle = randomPick(selected.angles);
       const cta = randomPick(selected.ctas);
+      const typeSpecificBlock = buildTypeSpecificBlock(type, idea);
 
       const resultHtml = `
         <div class="block"><b>🔥 TITLE IDEAS</b><br>
@@ -485,21 +539,7 @@
           ${hook}
         </div>
 
-        <div class="block"><b>🎬 SCRIPT STRUCTURE</b><br>
-          1. Hook in the first 3 seconds<br>
-          2. Introduce the main idea clearly<br>
-          3. Build value, curiosity, or emotion<br>
-          4. Deliver the main highlight<br>
-          5. End with a strong close
-        </div>
-
-        <div class="block"><b>🧩 SCENE / FLOW BREAKDOWN</b><br>
-          Step 1: Attention-grabbing opening<br>
-          Step 2: Introduce ${idea}<br>
-          Step 3: Main development or message<br>
-          Step 4: Peak moment or reveal<br>
-          Step 5: Final CTA and ending
-        </div>
+        ${typeSpecificBlock}
 
         <div class="block"><b>🎯 USER GOAL</b><br>
           ${goal}
@@ -520,7 +560,10 @@
 
     function copyResult() {
       const output = document.getElementById("output").innerText.trim();
-      if (!output) return;
+      if (!output || output === "Your generated content will appear here.") {
+        document.getElementById("resultLabel").innerText = "Generate result first";
+        return;
+      }
 
       navigator.clipboard.writeText(output).then(function () {
         document.getElementById("resultLabel").innerText = "Result copied";
