@@ -1,3 +1,5 @@
+let userMemory = {};
+
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ result: "Method not allowed" });
@@ -8,7 +10,7 @@ export default async function handler(req, res) {
       return res.status(500).json({ result: "API KEY NOT FOUND" });
     }
 
-    const { idea, type, output } = req.body || {};
+    const { idea } = req.body || {};
     const safeIdea = typeof idea === "string" ? idea.trim() : "";
 
     if (!safeIdea) {
@@ -29,55 +31,72 @@ export default async function handler(req, res) {
       return "general";
     }
 
-    function detectContentType(text) {
+    function detectType(text) {
       const t = text.toLowerCase();
       if (t.includes("ad") || t.includes("sell")) return "ad";
       if (t.includes("story") || t.includes("kahani")) return "story";
-      if (t.includes("reel") || t.includes("short")) return "short";
+      if (t.includes("short") || t.includes("reel")) return "short";
       return "general";
     }
 
     const lang = detectLanguage(safeIdea);
     const tone = detectTone(safeIdea);
-    const contentType = detectContentType(safeIdea);
+    const type = detectType(safeIdea);
 
-    // 🔥 SMART ANALYZER (ADVANCED)
-    function buildSmartAnalysis() {
+    // 🔥 MEMORY SYSTEM (basic safe)
+    userMemory.lastIdea = safeIdea;
+    userMemory.lastTone = tone;
+    userMemory.lastType = type;
+
+    // 🔥 ADVANCED ANALYZER
+    function buildAnalysis() {
       let score = 70;
-      let hookScore = 65;
+      let hook = 65;
       let retention = 60;
 
       if (tone === "emotional") {
-        score += 5;
+        score += 6;
         retention += 10;
       }
 
-      if (contentType === "short") {
+      if (tone === "funny") {
+        retention += 8;
+      }
+
+      if (type === "short") {
         retention += 10;
       }
 
-      if (safeIdea.length > 20) {
+      if (safeIdea.length > 25) {
         score += 3;
       }
 
       return {
         score: score + "%",
-        hook: hookScore + "%",
+        hook: hook + "%",
         retention: retention + "%"
       };
     }
 
-    const analysis = buildSmartAnalysis();
+    const analysis = buildAnalysis();
 
     // 🔥 PROMPT
     const prompt = `
 Reply ONLY in ${lang === "hi" ? "Hindi" : "English"}.
 
-Be smart, realistic, and short.
+You are Sazio AI (advanced creator brain).
 
-Idea: ${safeIdea}
+Rules:
+- No greeting
+- No intro
+- No fake promises
+- Strong hook
+- Real analysis
+- Short and clean
+
+User Idea: ${safeIdea}
 Tone: ${tone}
-Type: ${contentType}
+Type: ${type}
 
 Return:
 
@@ -105,6 +124,7 @@ Hook Strength: ${analysis.hook}
 Retention Chance: ${analysis.retention}
 Strength: ...
 Weakness: ...
+Missing: ...
 Improve: ...
 `;
 
@@ -128,9 +148,10 @@ Improve: ...
 
     const data = await response.json();
 
+    // 🔥 QUOTA SAFE
     if (response.status === 429) {
       return res.status(200).json({
-        result: `⚠️ Daily limit reached.\n\nQuick idea:\n${safeIdea} can perform better with stronger hook and emotional angle.`
+        result: `⚠️ Limit reached\n\nIdea: ${safeIdea}\n\nTry stronger hook + emotion + curiosity for better results.`
       });
     }
 
@@ -142,17 +163,17 @@ Improve: ...
 
     let text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
 
-    if (!text) {
+    if (!text || !text.trim()) {
       text = `Title:
 - ${safeIdea}
-- ${safeIdea} story
 - Viral ${safeIdea}
+- Best ${safeIdea}
 
 Hook:
 - A strong idea that can grab attention
 
 Script:
-- Start with attention
+- Start strong
 - Add emotion
 - End with twist
 
@@ -167,7 +188,8 @@ Hook Strength: ${analysis.hook}
 Retention Chance: ${analysis.retention}
 Strength: Relatable
 Weakness: Weak hook
-Improve: Add curiosity`;
+Missing: Curiosity
+Improve: Add stronger hook`;
     }
 
     return res.status(200).json({
