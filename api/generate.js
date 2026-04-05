@@ -1,30 +1,27 @@
 export default async function handler(req, res) {
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Method not allowed" });
+  }
+
   try {
     const { idea, type, output } = req.body;
 
     const prompt = `
-Create high-quality content.
+Create high quality ${type} content for:
+"${idea}"
 
-Idea: ${idea}
-Type: ${type}
-Output: ${output}
-
-Give:
-1. Title Ideas (3)
-2. Hook
-3. Content Angle
-4. Short Script
-5. SEO caption + keywords
+Include:
+- Title ideas
+- Hook
+- Script
+- SEO
 `;
 
     const response = await fetch(
-      "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" +
-        process.env.GEMINI_API_KEY,
+      "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=" + process.env.GEMINI_API_KEY,
       {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           contents: [{ parts: [{ text: prompt }] }]
         })
@@ -35,11 +32,11 @@ Give:
 
     const result =
       data?.candidates?.[0]?.content?.parts?.[0]?.text ||
-      "No result";
+      "No AI response";
 
     res.status(200).json({ result });
 
-  } catch (error) {
+  } catch (e) {
     res.status(500).json({ error: "Server error" });
   }
 }
