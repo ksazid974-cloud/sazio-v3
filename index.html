@@ -277,7 +277,7 @@
           </div>
           <div class="feature">
             <b>Voice Friendly</b>
-            <span>Speak your idea and let Sazio turn it into usable content quickly.</span>
+            <span>Speak your idea in Hindi or Hinglish and let Sazio turn it into usable content quickly.</span>
           </div>
         </div>
       </div>
@@ -386,22 +386,28 @@
       }
 
       recognitionInstance = new SpeechRecognition();
-      recognitionInstance.lang = "auto";
-      recognitionInstance.interimResults = false;
-      recognitionInstance.maxAlternatives = 1;
+      recognitionInstance.lang = "hi-IN";
+      recognitionInstance.interimResults = true;
+      recognitionInstance.continuous = false;
+      recognitionInstance.maxAlternatives = 3;
 
       isListening = true;
       voiceBtn.innerText = "Listening...";
-      status.innerText = "🎤 Speak now...";
+      status.innerText = "🎤 Hindi/Hinglish me boliye...";
 
       recognitionInstance.onresult = function(event) {
-        const transcript = event.results[0][0].transcript;
-        ideaInput.value = transcript;
+        let finalTranscript = "";
+        for (let i = 0; i < event.results.length; i++) {
+          finalTranscript += event.results[i][0].transcript + " ";
+        }
+        ideaInput.value = finalTranscript.trim();
         status.innerText = "Voice input captured";
       };
 
       recognitionInstance.onerror = function() {
         status.innerText = "Voice input error";
+        voiceBtn.innerText = "Voice Input";
+        isListening = false;
       };
 
       recognitionInstance.onend = function() {
