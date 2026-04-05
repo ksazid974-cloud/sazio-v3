@@ -1,18 +1,18 @@
-export const runtime = "edge";
+export default async function handler(req, res) {
+  if (req.method !== "POST") {
+    return res.status(405).json({ result: "Method not allowed" });
+  }
 
-export default async function handler(req) {
   try {
-    const { idea, type } = await req.json();
-
     if (!process.env.GEMINI_API_KEY) {
-      return new Response(JSON.stringify({
-        result: "❌ API KEY NOT FOUND"
-      }));
+      return res.status(500).json({ result: "API KEY NOT FOUND" });
     }
 
+    const { idea, type } = req.body || {};
+
     const prompt = `
-Create ${type} content for:
-${idea}
+Create ${type || "video"} content for:
+${idea || "content idea"}
 
 Include:
 - Title
@@ -25,29 +25,33 @@ Include:
       "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + process.env.GEMINI_API_KEY,
       {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json"
+        },
         body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }]
+          contents: [
+            {
+              parts: [{ text: prompt }]
+            }
+          ]
         })
       }
     );
 
     const data = await response.json();
 
-    // 🔥 DEBUG OUTPUT
-    if (!data.candidates) {
-      return new Response(JSON.stringify({
-        result: "❌ ERROR: " + JSON.stringify(data)
-      }));
+    if (!data?.candidates?.[0]?.content?.parts?.[0]?.text) {
+      return res.status(500).json({
+        result: "ERROR: " + JSON.stringify(data)
+      });
     }
 
     const result = data.candidates[0].content.parts[0].text;
 
-    return new Response(JSON.stringify({ result }));
-
-  } catch (e) {
-    return new Response(JSON.stringify({
-      result: "❌ SERVER ERROR"
-    }));
+    return res.status(200).json({ result });
+  } catch (error) {
+    return res.status(500).json({
+      result: "SERVER ERROR: " + error.message
+    });
   }
 }
