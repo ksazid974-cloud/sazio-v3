@@ -4,21 +4,21 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { idea, type, output } = req.body;
+    const { idea, type } = req.body;
 
     const prompt = `
-Create high quality ${type} content for:
-"${idea}"
+Create ${type} content for:
+${idea}
 
 Include:
-- Title ideas
+- Title
 - Hook
 - Script
 - SEO
 `;
 
     const response = await fetch(
-      "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=" + process.env.GEMINI_API_KEY,
+      "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + process.env.GEMINI_API_KEY,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
