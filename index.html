@@ -4,121 +4,167 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sazio V3</title>
-
 <style>
-body {
-  margin: 0;
-  font-family: Arial;
-  background: linear-gradient(135deg,#0f172a,#020617);
-  color: white;
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:linear-gradient(135deg,#0f172a,#020617);
+  color:#fff;
 }
-
-.container {
-  max-width: 1100px;
-  margin: auto;
-  padding: 20px;
+.container{
+  max-width:1100px;
+  margin:auto;
+  padding:20px;
 }
-
-.hero {
-  text-align: center;
-  padding: 30px 15px;
+.hero{
+  text-align:center;
+  padding:30px 15px;
 }
-
-.section {
-  background: rgba(255,255,255,0.05);
-  padding: 20px;
-  border-radius: 16px;
-  margin-top: 20px;
+.hero h1{
+  font-size:28px;
+  margin-bottom:10px;
 }
-
-.input, .textarea {
-  width: 100%;
-  padding: 12px;
-  margin-top: 10px;
-  border-radius: 10px;
-  border: none;
-  background: rgba(255,255,255,0.08);
-  color: white;
+.hero p{
+  color:#d1d5db;
 }
-
-.button {
-  margin-top: 12px;
-  padding: 12px;
-  width: 100%;
-  background: white;
-  color: black;
-  border: none;
-  border-radius: 10px;
-  font-weight: bold;
+.section{
+  background:rgba(255,255,255,0.05);
+  padding:20px;
+  border-radius:16px;
+  margin-top:20px;
 }
-
-.output {
-  margin-top: 20px;
+.input,.textarea{
+  width:100%;
+  padding:12px;
+  margin-top:10px;
+  border-radius:10px;
+  border:none;
+  background:rgba(255,255,255,0.08);
+  color:white;
+  box-sizing:border-box;
 }
-
-.block {
-  background: rgba(255,255,255,0.05);
-  padding: 15px;
-  border-radius: 12px;
-  margin-top: 10px;
+.textarea{
+  min-height:100px;
+  resize:vertical;
+}
+.button{
+  margin-top:12px;
+  padding:12px;
+  width:100%;
+  background:white;
+  color:black;
+  border:none;
+  border-radius:10px;
+  font-weight:bold;
+  cursor:pointer;
+}
+.output{
+  margin-top:20px;
+}
+.block{
+  background:rgba(255,255,255,0.05);
+  padding:15px;
+  border-radius:12px;
+  margin-top:10px;
+  line-height:1.6;
 }
 </style>
 </head>
-
 <body>
-
 <div class="container">
+  <div class="hero">
+    <h1>Sazio V3</h1>
+    <p>Create anything. Any idea. Any content.</p>
+  </div>
 
-<div class="hero">
-<h1>Sazio V3</h1>
-<p>Create anything. Any idea. Any content.</p>
-</div>
+  <div class="section">
+    <h2>AI Content Generator</h2>
 
-<div class="section">
-<h2>AI Content Generator</h2>
+    <input id="idea" class="input" placeholder="Enter your idea">
+    <input id="type" class="input" placeholder="Content type (video, reel, ad, story, post)">
+    <textarea id="goal" class="textarea" placeholder="What do you want? (script, idea, scenes, SEO, all)"></textarea>
 
-<input id="idea" class="input" placeholder="Enter your idea" />
-<input id="type" class="input" placeholder="Content type (video, reel, ad, story)" />
-<textarea id="goal" class="textarea" placeholder="What do you want? (script, idea, SEO, all)"></textarea>
+    <button class="button" onclick="generate()">Generate</button>
 
-<button class="button" onclick="generate()">Generate</button>
-
-<div id="output" class="output"></div>
-</div>
-
+    <div id="output" class="output"></div>
+  </div>
 </div>
 
 <script>
-function generate() {
-  let idea = document.getElementById("idea").value;
-  let type = document.getElementById("type").value;
-  let goal = document.getElementById("goal").value;
+function safeValue(v, fallback){
+  return v && v.trim() ? v.trim() : fallback;
+}
 
-  let result = `
-  <div class="block"><b>🔥 TITLE IDEAS</b><br>
-  - Viral ${type} about ${idea}<br>
-  - Best ${idea} content idea</div>
+function generate(){
+  const idea = safeValue(document.getElementById("idea").value, "content idea");
+  const type = safeValue(document.getElementById("type").value, "video");
+  const goal = safeValue(document.getElementById("goal").value, "script, title, scenes, and SEO");
 
-  <div class="block"><b>💡 CONTENT IDEA</b><br>
-  Create a ${type} around ${idea} with strong hook and engagement.</div>
+  const lowerIdea = idea.toLowerCase();
+  let hook = `Start with a strong curiosity-driven opening about ${idea}.`;
+  let angle = `Make the ${type} simple, engaging, and easy to understand.`;
+  let cta = `End by asking viewers to like, comment, and share.`;
 
-  <div class="block"><b>🎬 SCRIPT STRUCTURE</b><br>
-  1. Hook (first 3 sec)<br>
-  2. Problem or curiosity<br>
-  3. Main content<br>
-  4. Highlight moment<br>
-  5. Ending + CTA</div>
+  if (lowerIdea.includes("gym") || lowerIdea.includes("fitness")) {
+    hook = `Start with a powerful transformation or challenge hook about ${idea}.`;
+    angle = `Keep the ${type} energetic, motivational, and fast-paced.`;
+    cta = `End with a fitness challenge or question for the audience.`;
+  } else if (lowerIdea.includes("travel") || lowerIdea.includes("trip") || lowerIdea.includes("vlog")) {
+    hook = `Start with a beautiful or surprising moment from ${idea}.`;
+    angle = `Keep the ${type} immersive, scenic, and curiosity-driven.`;
+    cta = `End by asking viewers where they want to travel next.`;
+  } else if (lowerIdea.includes("product") || lowerIdea.includes("ad") || lowerIdea.includes("brand")) {
+    hook = `Start with a problem-solution hook related to ${idea}.`;
+    angle = `Keep the ${type} benefit-focused, clear, and convincing.`;
+    cta = `End with a clear action like try now or learn more.`;
+  } else if (lowerIdea.includes("comedy") || lowerIdea.includes("funny")) {
+    hook = `Start with a surprising or awkward funny moment about ${idea}.`;
+    angle = `Keep the ${type} punchy, fast, and expressive.`;
+    cta = `End by asking viewers to tag a friend.`;
+  } else if (lowerIdea.includes("horror") || lowerIdea.includes("scary")) {
+    hook = `Start with a mysterious and unsettling moment related to ${idea}.`;
+    angle = `Keep the ${type} suspenseful and curiosity-filled.`;
+    cta = `End with a question that keeps viewers thinking.`;
+  }
 
-  <div class="block"><b>🎯 OUTPUT GOAL</b><br>
-  ${goal}</div>
+  const html = `
+    <div class="block"><b>🔥 TITLE IDEAS</b><br>
+    1. Viral ${type} about ${idea}<br>
+    2. Best ${idea} ${type} idea for today<br>
+    3. ${idea} that people will actually watch</div>
 
-  <div class="block"><b>🚀 SEO TAGS</b><br>
-  ${idea}, ${type}, viral, trending, content</div>
+    <div class="block"><b>💡 CONTENT ANGLE</b><br>
+    ${angle}</div>
+
+    <div class="block"><b>🎣 HOOK</b><br>
+    ${hook}</div>
+
+    <div class="block"><b>🎬 SCRIPT STRUCTURE</b><br>
+    1. Hook in first 3 seconds<br>
+    2. Introduce the main idea<br>
+    3. Build interest or problem<br>
+    4. Deliver the main highlight<br>
+    5. Finish with a strong ending</div>
+
+    <div class="block"><b>🧩 SCENE BREAKDOWN</b><br>
+    Scene 1: Attention-grabbing opening<br>
+    Scene 2: Introduce ${idea}<br>
+    Scene 3: Main development or value<br>
+    Scene 4: Peak moment or reveal<br>
+    Scene 5: Ending with engagement push</div>
+
+    <div class="block"><b>🎯 USER GOAL</b><br>
+    ${goal}</div>
+
+    <div class="block"><b>📢 CTA</b><br>
+    ${cta}</div>
+
+    <div class="block"><b>🚀 SEO TAGS</b><br>
+    ${idea}, ${type}, viral, trending, content creator, sazio</div>
   `;
 
-  document.getElementById("output").innerHTML = result;
+  document.getElementById("output").innerHTML = html;
 }
 </script>
-
 </body>
 </html>
