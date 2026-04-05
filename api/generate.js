@@ -10,7 +10,8 @@ export default async function handler(req, res) {
 
     const { idea, type, output } = req.body || {};
     const safeIdea = typeof idea === "string" ? idea.trim() : "";
-    const safeType = typeof type === "string" && type.trim() ? type.trim() : "content";
+    const safeType =
+      typeof type === "string" && type.trim() ? type.trim() : "content";
     const safeOutput =
       typeof output === "string" && output.trim()
         ? output.trim()
@@ -20,11 +21,15 @@ export default async function handler(req, res) {
       return res.status(400).json({ result: "Idea required" });
     }
 
+    function normalizeSpaces(text) {
+      return String(text || "").replace(/\s+/g, " ").trim();
+    }
+
     function detectLanguage(text) {
       if (/[\u0900-\u097F]/.test(text)) return "hi";
       if (/[\u0600-\u06FF]/.test(text)) return "ar";
 
-      const t = text.toLowerCase();
+      const t = String(text).toLowerCase();
       const romanHindiWords = [
         "ek", "ki", "ka", "ke", "kisan", "kahani", "story", "bnao", "banao",
         "garib", "gaon", "dard", "sangharsh", "mehnat", "safalta",
@@ -41,7 +46,7 @@ export default async function handler(req, res) {
     }
 
     function detectTone(text) {
-      const t = text.toLowerCase();
+      const t = String(text).toLowerCase();
 
       if (
         t.includes("funny") ||
@@ -79,10 +84,6 @@ export default async function handler(req, res) {
       return "general";
     }
 
-    function normalizeSpaces(text) {
-      return text.replace(/\s+/g, " ").trim();
-    }
-
     function removeDuplicateWords(text) {
       const words = normalizeSpaces(text).split(" ");
       const result = [];
@@ -98,7 +99,7 @@ export default async function handler(req, res) {
     }
 
     function cleanupTopic(text, lang) {
-      let t = text.trim();
+      let t = String(text || "").trim();
 
       if (lang === "hi") {
         t = t
@@ -113,13 +114,11 @@ export default async function handler(req, res) {
         t = normalizeSpaces(t);
         t = removeDuplicateWords(t);
 
-        if (!t) return "garib kisan";
-        return t;
+        return t || "garib kisan";
       }
 
       if (lang === "ar") {
-        t = normalizeSpaces(t);
-        return t || "قصة مؤثرة";
+        return normalizeSpaces(t) || "قصة مؤثرة";
       }
 
       t = t
@@ -134,7 +133,7 @@ export default async function handler(req, res) {
     }
 
     function toTitleCaseSimple(text) {
-      return text
+      return normalizeSpaces(text)
         .split(" ")
         .filter(Boolean)
         .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
@@ -143,7 +142,9 @@ export default async function handler(req, res) {
 
     function buildKeywords(topic, lang) {
       if (lang === "hi") {
-        const clean = topic.replace(/\b(ki|ka|ke)\b/gi, "").replace(/\s+/g, " ").trim();
+        const clean = normalizeSpaces(
+          topic.replace(/\b(ki|ka|ke)\b/gi, " ")
+        );
         return `${clean} story, ${clean} sangharsh, emotional short video`;
       }
 
@@ -385,9 +386,10 @@ Do not write anything outside these lines.
 
       if (!value) return fallback;
 
-      let cleaned = value.replace(/\s+/g, " ").trim();
+      let cleaned = normalizeSpaces(value);
       cleaned = cleaned.replace(/\b(ki|ka|ke)\s+\1\b/gi, "$1");
-      cleaned = cleaned.replace(/\b(\w+)\s+\1\b/gi, "$1").trim();
+      cleaned = cleaned.replace(/\b(\w+)\s+\1\b/gi, "$1");
+      cleaned = normalizeSpaces(cleaned);
 
       if (!cleaned) return fallback;
       if (badPatterns.some((p) => p.test(cleaned))) return fallback;
