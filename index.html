@@ -23,7 +23,7 @@ body {
   border-radius: 15px;
   margin-bottom: 20px;
 }
-input,select,textarea {
+input,textarea {
   width: 100%;
   padding: 12px;
   margin-top: 10px;
@@ -64,24 +64,15 @@ button {
 
 <div class="card">
 <h2>🚀 Sazio AI</h2>
-<p>Create viral content instantly</p>
+<p>Smart Creator AI</p>
 </div>
 
 <div class="card">
 
 <input id="idea" placeholder="Enter your idea">
 
-<select id="type">
-<option value="video">Video</option>
-<option value="post">Post</option>
-<option value="story">Story</option>
-<option value="ad">Ad</option>
-</select>
-
-<textarea id="goal" placeholder="What do you want?"></textarea>
-
 <button class="generate" onclick="generate()">Generate</button>
-<button class="voice" id="voiceBtn" onclick="startVoice()">Voice Input</button>
+<button class="voice" onclick="startVoice()">Voice Input</button>
 <button class="copy" onclick="copyText()">Copy</button>
 
 <div class="status" id="status">Ready</div>
@@ -92,72 +83,36 @@ button {
 </div>
 
 <script>
-let recognitionInstance = null;
-let isListening = false;
+let recognition;
 
-function startVoice() {
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  const status = document.getElementById("status");
-  const voiceBtn = document.getElementById("voiceBtn");
-  const ideaInput = document.getElementById("idea");
+// 🔥 LOAD MEMORY
+window.onload = function() {
+  const savedIdea = localStorage.getItem("sazio_idea");
+  const savedOutput = localStorage.getItem("sazio_output");
 
-  if (!SpeechRecognition) {
-    status.innerText = "Voice not supported";
-    return;
+  if (savedIdea) {
+    document.getElementById("idea").value = savedIdea;
   }
 
-  if (isListening && recognitionInstance) {
-    recognitionInstance.stop();
-    return;
+  if (savedOutput) {
+    document.getElementById("output").innerText = savedOutput;
   }
+};
 
-  recognitionInstance = new SpeechRecognition();
-
-  recognitionInstance.lang = "hi-IN";
-  recognitionInstance.interimResults = false;
-  recognitionInstance.continuous = false;
-
-  isListening = true;
-  voiceBtn.innerText = "🎤 Listening...";
-  status.innerText = "बोलिए... पूरा बोलकर 1 सेकंड रुकिए";
-
-  let finalText = "";
-
-  recognitionInstance.onresult = function(event) {
-    finalText = event.results[0][0].transcript;
-  };
-
-  recognitionInstance.onend = function() {
-    isListening = false;
-    voiceBtn.innerText = "Voice Input";
-
-    if (finalText && finalText.trim()) {
-      ideaInput.value = finalText.trim();
-      status.innerText = "✅ Voice captured";
-    } else {
-      status.innerText = "⚠️ No voice detected";
-    }
-  };
-
-  recognitionInstance.onerror = function() {
-    status.innerText = "Voice error";
-    isListening = false;
-    voiceBtn.innerText = "Voice Input";
-  };
-
-  recognitionInstance.start();
+// 🔥 SAVE MEMORY
+function saveMemory(idea, output) {
+  localStorage.setItem("sazio_idea", idea);
+  localStorage.setItem("sazio_output", output);
 }
 
+// 🔥 GENERATE
 async function generate() {
   const idea = document.getElementById("idea").value.trim();
-  const type = document.getElementById("type").value;
-  const goal = document.getElementById("goal").value.trim();
-
   const box = document.getElementById("output");
   const status = document.getElementById("status");
 
   if (!idea) {
-    box.innerText = "⚠️ Enter idea first";
+    box.innerText = "Enter idea first";
     return;
   }
 
@@ -168,11 +123,7 @@ async function generate() {
     const res = await fetch("/api/generate", {
       method: "POST",
       headers: {"Content-Type":"application/json"},
-      body: JSON.stringify({
-        idea: idea,
-        type: type,
-        output: goal
-      })
+      body: JSON.stringify({ idea })
     });
 
     const data = await res.json();
@@ -180,12 +131,40 @@ async function generate() {
     box.innerText = data.result;
     status.innerText = "Done";
 
+    // 🔥 SAVE
+    saveMemory(idea, data.result);
+
   } catch (e) {
     box.innerText = "Error";
     status.innerText = "Error";
   }
 }
 
+// 🔥 VOICE
+function startVoice() {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+  if (!SpeechRecognition) {
+    alert("Voice not supported");
+    return;
+  }
+
+  recognition = new SpeechRecognition();
+  recognition.lang = "hi-IN";
+  recognition.interimResults = false;
+
+  recognition.start();
+
+  document.getElementById("status").innerText = "Listening...";
+
+  recognition.onresult = function(event) {
+    const text = event.results[0][0].transcript;
+    document.getElementById("idea").value = text;
+    document.getElementById("status").innerText = "Voice captured";
+  };
+}
+
+// 🔥 COPY
 function copyText() {
   const text = document.getElementById("output").innerText;
   navigator.clipboard.writeText(text);
