@@ -173,6 +173,12 @@
       font-size: 14px;
     }
 
+    .result-scroll {
+      max-height: 75vh;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
     .block {
       background: rgba(255, 255, 255, 0.05);
       border: 1px solid rgba(255,255,255,0.08);
@@ -191,12 +197,28 @@
       color: #94a3b8;
     }
 
+    .loading {
+      display: inline-block;
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(255,255,255,0.35);
+      border-top-color: #ffffff;
+      border-radius: 50%;
+      animation: spin 0.9s linear infinite;
+      vertical-align: middle;
+      margin-right: 8px;
+    }
+
     .footer {
       margin-top: 24px;
       text-align: center;
       color: #94a3b8;
       font-size: 13px;
       padding-bottom: 10px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
     }
 
     @media (min-width: 900px) {
@@ -258,7 +280,7 @@
         <textarea id="goal" class="textarea" placeholder="What do you want? (script, scenes, hooks, SEO, caption, full pack)"></textarea>
 
         <div class="button-row">
-          <button class="button button-primary" onclick="generate()">Generate</button>
+          <button id="generateBtn" class="button button-primary" onclick="generate()">Generate</button>
           <button class="button button-secondary" onclick="copyResult()">Copy Result</button>
           <button class="button button-secondary" onclick="clearAll()">Clear</button>
         </div>
@@ -277,8 +299,8 @@
             <p>Gives titles, concept, hook, script flow, CTA, and SEO tags.</p>
           </div>
           <div class="feature-card">
-            <h3>Mobile Friendly</h3>
-            <p>Clean layout for phone and laptop both.</p>
+            <h3>Pro UX</h3>
+            <p>Loading state, better feedback, clean result sections, and mobile polish.</p>
           </div>
         </div>
       </div>
@@ -292,7 +314,7 @@
             <div class="status" id="resultLabel">Waiting for input...</div>
           </div>
 
-          <div id="output">
+          <div id="output" class="result-scroll">
             <div class="block placeholder">Your generated content will appear here.</div>
           </div>
         </div>
@@ -300,7 +322,7 @@
     </div>
 
     <div class="footer">
-      Sazio V3 • Smart Frontend Generator • Multi-purpose Creator Platform
+      Sazio V3 • Phase 7 UX Upgrade • Multi-purpose Creator Platform
     </div>
   </div>
 
@@ -341,10 +363,10 @@
       if (type === "post") {
         return `
           <div class="block"><b>📱 CAPTION IDEA</b><br>
-            Here is a strong post caption angle for ${idea}: make it short, clear, and highly engaging.
+            Create a short, attention-grabbing caption around ${idea} that feels clear and shareable.
           </div>
           <div class="block"><b>🏷 HASHTAG DIRECTION</b><br>
-            Use a mix of niche + broad tags around ${idea} for better reach.
+            Use a mix of broad and niche hashtags based on ${idea} for better discoverability.
           </div>
         `;
       }
@@ -352,10 +374,10 @@
       if (type === "ad") {
         return `
           <div class="block"><b>💰 AD COPY DIRECTION</b><br>
-            Start with a pain point, show the benefit, then close with a simple action.
+            Start with a pain point, present the benefit, then close with a direct action.
           </div>
           <div class="block"><b>📢 SALES CTA</b><br>
-            Push a clear action like try now, check now, or learn more.
+            Use a clear call to action like try now, check now, or learn more.
           </div>
         `;
       }
@@ -363,10 +385,21 @@
       if (type === "story") {
         return `
           <div class="block"><b>📖 STORY FLOW</b><br>
-            Beginning → build curiosity → emotional or logical turn → strong ending.
+            Beginning → build curiosity → key turn → strong ending.
           </div>
           <div class="block"><b>🎭 STORY TONE</b><br>
-            Keep the flow simple, engaging, and easy to visualize.
+            Keep the storytelling easy to follow, visual, and engaging.
+          </div>
+        `;
+      }
+
+      if (type === "script") {
+        return `
+          <div class="block"><b>📝 SCRIPT DIRECTION</b><br>
+            Write in a clear flow: hook, setup, value, highlight, and ending.
+          </div>
+          <div class="block"><b>🎤 DELIVERY STYLE</b><br>
+            Keep the wording natural, sharp, and audience-friendly.
           </div>
         `;
       }
@@ -390,7 +423,21 @@
       `;
     }
 
-    function generate() {
+    function setLoadingState(isLoading) {
+      const btn = document.getElementById("generateBtn");
+      const label = document.getElementById("resultLabel");
+
+      if (isLoading) {
+        btn.disabled = true;
+        btn.innerHTML = '<span class="loading"></span>Generating...';
+        label.innerText = 'Generating result...';
+      } else {
+        btn.disabled = false;
+        btn.innerText = 'Generate';
+      }
+    }
+
+    function buildResult() {
       const idea = safeValue(document.getElementById("idea").value, "content idea");
       const type = safeValue(document.getElementById("type").value, "video");
       const goal = safeValue(document.getElementById("goal").value, "script, hooks, structure, and SEO");
@@ -524,7 +571,7 @@
       const cta = randomPick(selected.ctas);
       const typeSpecificBlock = buildTypeSpecificBlock(type, idea);
 
-      const resultHtml = `
+      return `
         <div class="block"><b>🔥 TITLE IDEAS</b><br>
           1. Viral ${type} about ${idea}<br>
           2. Best ${idea} ${type} idea for today<br>
@@ -553,9 +600,17 @@
           ${idea}, ${type}, viral, trending, creator tools, sazio
         </div>
       `;
+    }
 
-      document.getElementById("output").innerHTML = resultHtml;
-      document.getElementById("resultLabel").innerText = "Result generated successfully";
+    function generate() {
+      setLoadingState(true);
+
+      setTimeout(function() {
+        const resultHtml = buildResult();
+        document.getElementById("output").innerHTML = resultHtml;
+        document.getElementById("resultLabel").innerText = "Result generated successfully";
+        setLoadingState(false);
+      }, 700);
     }
 
     function copyResult() {
