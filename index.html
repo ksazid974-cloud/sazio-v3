@@ -1,64 +1,27 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sazio AI</title>
 
 <style>
-body {
-  margin: 0;
-  font-family: Arial;
-  background: linear-gradient(135deg,#0f172a,#020617);
-  color: white;
+body{margin:0;font-family:Arial;background:#020617;color:white}
+.container{max-width:650px;margin:auto;padding:20px}
+.card{background:#0f172a;padding:20px;border-radius:15px;margin-bottom:15px}
+h2{margin-top:0}
+input,select,textarea{
+width:100%;padding:12px;margin-top:10px;border-radius:10px;
+border:none;background:#1e293b;color:white;font-size:15px
 }
-
-.container {
-  max-width: 600px;
-  margin: auto;
-  padding: 20px;
+button{
+width:100%;padding:14px;margin-top:10px;border:none;
+border-radius:10px;font-weight:bold;cursor:pointer
 }
-
-.card {
-  background: rgba(255,255,255,0.05);
-  padding: 20px;
-  border-radius: 15px;
-  margin-bottom: 20px;
-}
-
-input,select,textarea {
-  width: 100%;
-  padding: 12px;
-  margin-top: 10px;
-  border-radius: 10px;
-  border: none;
-  background: rgba(255,255,255,0.1);
-  color: white;
-}
-
-button {
-  width: 100%;
-  padding: 14px;
-  margin-top: 10px;
-  border-radius: 10px;
-  border: none;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.generate { background: white; color: black; }
-.copy { background: #1e293b; color: white; }
-
-#output {
-  margin-top: 10px;
-  white-space: pre-line;
-  line-height: 1.6;
-}
-
-.status {
-  font-size: 14px;
-  color: #94a3b8;
-}
+.generate{background:white;color:black}
+.copy{background:#1e293b;color:white}
+#output{margin-top:10px;white-space:pre-line;line-height:1.6}
+.status{font-size:14px;color:#94a3b8}
+.footer{text-align:center;font-size:13px;color:#64748b;margin-top:20px}
 </style>
 </head>
 
@@ -68,24 +31,32 @@ button {
 
 <div class="card">
 <h2>🚀 Sazio AI</h2>
-<p>Create viral content instantly</p>
+<p>Free AI tool for viral scripts, hooks & SEO</p>
 </div>
 
 <div class="card">
+
 <input id="idea" placeholder="Enter your idea">
+
 <select id="type">
 <option value="video">Video</option>
 <option value="post">Post</option>
 <option value="story">Story</option>
+<option value="ad">Ad</option>
 </select>
 
-<textarea id="goal" placeholder="What do you want?"></textarea>
+<textarea id="goal" placeholder="What do you want? (script, hook, SEO)"></textarea>
 
 <button class="generate" onclick="generate()">Generate</button>
-<button class="copy" onclick="copyText()">Copy</button>
+<button class="copy" onclick="copyText()">Copy Result</button>
 
 <div class="status" id="status">Ready</div>
 <div id="output">Result will appear here...</div>
+
+</div>
+
+<div class="footer">
+Sazio AI • No login • Free creator tool 🚀
 </div>
 
 </div>
@@ -132,7 +103,29 @@ async function generate() {
       return;
     }
 
-    box.innerText = data.result;
+    // 🔥 STRUCTURED OUTPUT (SAFE VERSION)
+    let text = data.result;
+
+    function extract(label){
+      let part = text.split(label);
+      return part[1] ? part[1].split("\n")[0].trim() : "";
+    }
+
+    const formatted = `
+📌 Title:
+${extract("Title")}
+
+🔥 Hook:
+${extract("Hook")}
+
+🎬 Script:
+${extract("Script")}
+
+📊 SEO:
+${extract("SEO")}
+`;
+
+    box.innerText = formatted || text;
     status.innerText = "✅ Done";
 
   } catch (e) {
