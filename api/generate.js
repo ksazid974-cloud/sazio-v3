@@ -23,68 +23,39 @@ export default async function handler(req, res) {
     const prompt = `
 Reply ONLY in the SAME language as the user's idea.
 
-You are Sazio AI.
-Be practical, short, complete, and honest.
+Be short, complete, and practical.
 No greeting.
 No intro.
 No fake claims.
+No empty lines.
 No incomplete lines.
 
-User idea: ${safeIdea}
-Content type: ${safeType}
+Idea: ${safeIdea}
+Type: ${safeType}
 User wants: ${safeOutput}
 
-Generate complete content for this idea.
-`;
+Return EXACTLY in this line-by-line format:
 
-    const schema = {
-      type: "object",
-      properties: {
-        titles: {
-          type: "array",
-          minItems: 3,
-          maxItems: 3,
-          items: { type: "string" }
-        },
-        hook: { type: "string" },
-        script: {
-          type: "array",
-          minItems: 3,
-          maxItems: 3,
-          items: { type: "string" }
-        },
-        seo: {
-          type: "object",
-          properties: {
-            keywords: {
-              type: "array",
-              minItems: 3,
-              maxItems: 3,
-              items: { type: "string" }
-            },
-            hashtags: {
-              type: "array",
-              minItems: 3,
-              maxItems: 3,
-              items: { type: "string" }
-            },
-            caption: { type: "string" }
-          },
-          required: ["keywords", "hashtags", "caption"]
-        },
-        analysis: {
-          type: "object",
-          properties: {
-            score: { type: "string" },
-            strength: { type: "string" },
-            weakness: { type: "string" },
-            improve: { type: "string" }
-          },
-          required: ["score", "strength", "weakness", "improve"]
-        }
-      },
-      required: ["titles", "hook", "script", "seo", "analysis"]
-    };
+TITLE1: short title
+TITLE2: short title
+TITLE3: short title
+HOOK: one complete strong hook
+SCRIPT1: short line
+SCRIPT2: short line
+SCRIPT3: short line
+KEYWORDS: keyword1, keyword2, keyword3
+HASHTAGS: #tag1 #tag2 #tag3
+CAPTION: short caption
+SCORE: realistic percentage
+STRENGTH: one short strength
+WEAKNESS: one short weakness
+IMPROVE: one short improvement
+
+Rules:
+- Keep every value short
+- Finish every line
+- Do not write anything outside these 14 lines
+`;
 
     const response = await fetch(
       "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
@@ -101,10 +72,8 @@ Generate complete content for this idea.
             }
           ],
           generationConfig: {
-            responseMimeType: "application/json",
-            responseJsonSchema: schema,
-            temperature: 0.5,
-            maxOutputTokens: 700
+            temperature: 0.4,
+            maxOutputTokens: 420
           }
         })
       }
@@ -126,43 +95,56 @@ Generate complete content for this idea.
       });
     }
 
-    let parsed;
-    try {
-      parsed = JSON.parse(raw);
-    } catch (e) {
-      return res.status(500).json({
-        result: "JSON PARSE ERROR: " + raw
-      });
+    const lines = raw
+      .split("\n")
+      .map((line) => line.trim())
+      .filter(Boolean);
+
+    function getValue(prefix, fallback) {
+      const line = lines.find((l) => l.startsWith(prefix));
+      if (!line) return fallback;
+      const value = line.slice(prefix.length).trim();
+      return value || fallback;
     }
 
-    const titles = Array.isArray(parsed.titles) ? parsed.titles : [];
-    const script = Array.isArray(parsed.script) ? parsed.script : [];
-    const keywords = Array.isArray(parsed?.seo?.keywords) ? parsed.seo.keywords : [];
-    const hashtags = Array.isArray(parsed?.seo?.hashtags) ? parsed.seo.hashtags : [];
+    const title1 = getValue("TITLE1:", "Strong title 1");
+    const title2 = getValue("TITLE2:", "Strong title 2");
+    const title3 = getValue("TITLE3:", "Strong title 3");
+    const hook = getValue("HOOK:", "A strong hook");
+    const script1 = getValue("SCRIPT1:", "Script line 1");
+    const script2 = getValue("SCRIPT2:", "Script line 2");
+    const script3 = getValue("SCRIPT3:", "Script line 3");
+    const keywords = getValue("KEYWORDS:", "keyword1, keyword2, keyword3");
+    const hashtags = getValue("HASHTAGS:", "#tag1 #tag2 #tag3");
+    const caption = getValue("CAPTION:", "Short caption");
+    const score = getValue("SCORE:", "70%");
+    const strength = getValue("STRENGTH:", "Strong emotional angle");
+    const weakness = getValue("WEAKNESS:", "Hook can be stronger");
+    const improve = getValue("IMPROVE:", "Add more curiosity at the start");
 
     const finalText = `Title:
-- ${titles[0] || "Title 1"}
-- ${titles[1] || "Title 2"}
-- ${titles[2] || "Title 3"}
+- ${title1}
+- ${title2}
+- ${title3}
 
 Hook:
-- ${parsed.hook || "Strong hook"}
+- ${hook}
 
 Script:
-- ${script[0] || "Script line 1"}
-- ${script[1] || "Script line 2"}
-- ${script[2] || "Script line 3"}
+- ${script1}
+- ${script2}
+- ${script3}
 
 SEO:
-Keywords: ${(keywords[0] || "keyword1")}, ${(keywords[1] || "keyword2")}, ${(keywords[2] || "keyword3")}
-Hashtags: ${(hashtags[0] || "#tag1")} ${(hashtags[1] || "#tag2")} ${(hashtags[2] || "#tag3")}
-Caption: ${parsed?.seo?.caption || "Short caption"}
+Keywords: ${keywords}
+Hashtags: ${hashtags}
+Caption: ${caption}
 
 Analysis:
-Score: ${parsed?.analysis?.score || "70%"}
-Strength: ${parsed?.analysis?.strength || "Strong emotional angle"}
-Weakness: ${parsed?.analysis?.weakness || "Hook can be stronger"}
-Improve: ${parsed?.analysis?.improve || "Add more curiosity at the start"}`;
+Score: ${score}
+Strength: ${strength}
+Weakness: ${weakness}
+Improve: ${improve}`;
 
     return res.status(200).json({
       result: finalText
