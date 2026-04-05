@@ -8,13 +8,8 @@ export default async function handler(req, res) {
       return res.status(500).json({ result: "API KEY NOT FOUND" });
     }
 
-    const { idea, type, output } = req.body || {};
+    const { idea } = req.body || {};
     const safeIdea = typeof idea === "string" ? idea.trim() : "";
-    const safeType = typeof type === "string" && type.trim() ? type.trim() : "content";
-    const safeOutput =
-      typeof output === "string" && output.trim()
-        ? output.trim()
-        : "title, hook, script, SEO, analysis";
 
     if (!safeIdea) {
       return res.status(400).json({ result: "Idea required" });
@@ -23,38 +18,39 @@ export default async function handler(req, res) {
     const prompt = `
 Reply ONLY in the SAME language as the user's idea.
 
-Be practical, short, complete, and honest.
+Be practical, short, complete and real.
 No greeting.
 No intro.
-No fake claims.
-No empty bullets.
-No incomplete line.
+No fake placeholders.
+No "title 1", "script line" type text.
 
 Idea: ${safeIdea}
-Content type: ${safeType}
-User wants: ${safeOutput}
 
-Return EXACTLY in this format:
+Return in this format:
 
-TITLE1: short title
-TITLE2: short title
-TITLE3: short title
-HOOK: one complete strong hook
-SCRIPT1: short line
-SCRIPT2: short line
-SCRIPT3: short line
-KEYWORDS: keyword1, keyword2, keyword3
-HASHTAGS: #tag1 #tag2 #tag3
-CAPTION: short caption
-SCORE: realistic percentage
-STRENGTH: one short strength
-WEAKNESS: one short weakness
-IMPROVE: one short improvement
+Title:
+- ...
+- ...
+- ...
 
-Rules:
-- Keep every value short
-- Finish every line
-- Do not write anything outside these lines
+Hook:
+- ...
+
+Script:
+- ...
+- ...
+- ...
+
+SEO:
+Keywords: ...
+Hashtags: ...
+Caption: ...
+
+Analysis:
+Score: ...
+Strength: ...
+Weakness: ...
+Improve: ...
 `;
 
     const response = await fetch(
@@ -72,8 +68,8 @@ Rules:
             }
           ],
           generationConfig: {
-            temperature: 0.4,
-            maxOutputTokens: 420
+            temperature: 0.5,
+            maxOutputTokens: 600
           }
         })
       }
@@ -83,7 +79,7 @@ Rules:
 
     if (response.status === 429) {
       return res.status(429).json({
-        result: "Daily free limit reached. Please wait and try again later."
+        result: "Daily limit reached. Try again later."
       });
     }
 
@@ -93,68 +89,28 @@ Rules:
       });
     }
 
-    const raw = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+    let text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
 
-    if (!raw || !raw.trim()) {
+    if (!text || !text.trim()) {
       return res.status(500).json({
         result: "No AI response"
       });
     }
 
-    const lines = raw
-      .split("\n")
-      .map((line) => line.trim())
-      .filter(Boolean);
-
-    function getValue(prefix, fallback) {
-      const line = lines.find((l) => l.startsWith(prefix));
-      if (!line) return fallback;
-      const value = line.slice(prefix.length).trim();
-      return value || fallback;
-    }
-
-    const title1 = getValue("TITLE1:", "Strong title 1");
-    const title2 = getValue("TITLE2:", "Strong title 2");
-    const title3 = getValue("TITLE3:", "Strong title 3");
-    const hook = getValue("HOOK:", "A strong hook");
-    const script1 = getValue("SCRIPT1:", "Script line 1");
-    const script2 = getValue("SCRIPT2:", "Script line 2");
-    const script3 = getValue("SCRIPT3:", "Script line 3");
-    const keywords = getValue("KEYWORDS:", "keyword1, keyword2, keyword3");
-    const hashtags = getValue("HASHTAGS:", "#tag1 #tag2 #tag3");
-    const caption = getValue("CAPTION:", "Short caption");
-    const score = getValue("SCORE:", "70%");
-    const strength = getValue("STRENGTH:", "Strong emotional angle");
-    const weakness = getValue("WEAKNESS:", "Hook can be stronger");
-    const improve = getValue("IMPROVE:", "Add more curiosity at the start");
-
-    const finalText = `Title:
-- ${title1}
-- ${title2}
-- ${title3}
-
-Hook:
-- ${hook}
-
-Script:
-- ${script1}
-- ${script2}
-- ${script3}
-
-SEO:
-Keywords: ${keywords}
-Hashtags: ${hashtags}
-Caption: ${caption}
-
-Analysis:
-Score: ${score}
-Strength: ${strength}
-Weakness: ${weakness}
-Improve: ${improve}`;
+    // 🔥 CLEAN OUTPUT (important)
+    text = text
+      .replace(/Strong title \d/gi, "")
+      .replace(/Script line \d/gi, "")
+      .replace(/keyword\d/gi, "")
+      .replace(/#tag\d/gi, "")
+      .replace(/Short caption/gi, "")
+      .replace(/A strong hook/gi, "")
+      .trim();
 
     return res.status(200).json({
-      result: finalText
+      result: text
     });
+
   } catch (error) {
     return res.status(500).json({
       result: "SERVER ERROR: " + error.message
