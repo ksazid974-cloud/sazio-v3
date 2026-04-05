@@ -4,6 +4,12 @@ export default async function handler(req) {
   try {
     const { idea, type } = await req.json();
 
+    if (!process.env.GEMINI_API_KEY) {
+      return new Response(JSON.stringify({
+        result: "❌ API KEY NOT FOUND"
+      }));
+    }
+
     const prompt = `
 Create ${type} content for:
 ${idea}
@@ -28,17 +34,20 @@ Include:
 
     const data = await response.json();
 
-    const result =
-      data?.candidates?.[0]?.content?.parts?.[0]?.text ||
-      JSON.stringify(data);
+    // 🔥 DEBUG OUTPUT
+    if (!data.candidates) {
+      return new Response(JSON.stringify({
+        result: "❌ ERROR: " + JSON.stringify(data)
+      }));
+    }
 
-    return new Response(JSON.stringify({ result }), {
-      headers: { "Content-Type": "application/json" },
-    });
+    const result = data.candidates[0].content.parts[0].text;
+
+    return new Response(JSON.stringify({ result }));
 
   } catch (e) {
-    return new Response(JSON.stringify({ result: "Server error" }), {
-      headers: { "Content-Type": "application/json" },
-    });
+    return new Response(JSON.stringify({
+      result: "❌ SERVER ERROR"
+    }));
   }
 }
