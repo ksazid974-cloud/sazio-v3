@@ -1,145 +1,416 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sazio AI</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sazio AI</title>
 
-<style>
-body{margin:0;font-family:Arial;background:#020617;color:white}
-.container{max-width:650px;margin:auto;padding:20px}
-.card{background:#0f172a;padding:20px;border-radius:15px;margin-bottom:15px}
-h2{margin-top:0}
-input,select,textarea{
-width:100%;padding:12px;margin-top:10px;border-radius:10px;
-border:none;background:#1e293b;color:white;font-size:15px
-}
-button{
-width:100%;padding:14px;margin-top:10px;border:none;
-border-radius:10px;font-weight:bold;cursor:pointer
-}
-.generate{background:white;color:black}
-.copy{background:#1e293b;color:white}
-#output{margin-top:10px;white-space:pre-line;line-height:1.6}
-.status{font-size:14px;color:#94a3b8}
-.footer{text-align:center;font-size:13px;color:#64748b;margin-top:20px}
-</style>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #0f172a, #020617);
+      color: white;
+    }
+
+    .container {
+      max-width: 980px;
+      margin: auto;
+      padding: 20px;
+    }
+
+    .hero {
+      text-align: center;
+      padding: 28px 18px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 22px;
+      margin-bottom: 20px;
+    }
+
+    .badge {
+      display: inline-block;
+      background: #ffffff;
+      color: #0f172a;
+      font-size: 12px;
+      font-weight: bold;
+      padding: 8px 14px;
+      border-radius: 999px;
+      margin-bottom: 12px;
+    }
+
+    .hero h1 {
+      margin: 0 0 10px;
+      font-size: 34px;
+    }
+
+    .hero p {
+      margin: 0;
+      color: #cbd5e1;
+      line-height: 1.6;
+      font-size: 16px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+
+    .card {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 20px;
+      padding: 20px;
+    }
+
+    .card h2 {
+      margin-top: 0;
+      margin-bottom: 12px;
+      font-size: 24px;
+    }
+
+    .subtext {
+      color: #cbd5e1;
+      line-height: 1.5;
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 13px 14px;
+      margin-top: 10px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.08);
+      color: #ffffff;
+      font-size: 15px;
+      outline: none;
+    }
+
+    select option {
+      color: #000000;
+    }
+
+    textarea {
+      min-height: 110px;
+      resize: vertical;
+    }
+
+    .button-row {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 15px;
+    }
+
+    .primary {
+      background: #ffffff;
+      color: #0f172a;
+    }
+
+    .secondary {
+      background: rgba(255,255,255,0.1);
+      color: #ffffff;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .voice {
+      background: #2563eb;
+      color: white;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .result-wrap {
+      margin-top: 14px;
+    }
+
+    .status {
+      color: #cbd5e1;
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+
+    .result {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px;
+      padding: 16px;
+      white-space: pre-line;
+      line-height: 1.7;
+      min-height: 140px;
+    }
+
+    .features {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    .feature {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 14px;
+      padding: 14px;
+    }
+
+    .feature b {
+      display: block;
+      margin-bottom: 6px;
+      color: #ffffff;
+    }
+
+    .feature span {
+      color: #cbd5e1;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .example {
+      color: #cbd5e1;
+      line-height: 1.7;
+      font-size: 15px;
+    }
+
+    .trust {
+      margin-top: 20px;
+      text-align: center;
+      color: #94a3b8;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .footer {
+      margin-top: 30px;
+      text-align: center;
+      color: #94a3b8;
+      font-size: 13px;
+      padding-bottom: 10px;
+    }
+
+    @media (min-width: 900px) {
+      .grid {
+        grid-template-columns: 1.08fr 0.92fr;
+      }
+
+      .button-row {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      .features {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+  </style>
 </head>
-
 <body>
+  <div class="container">
+    <div class="hero">
+      <div class="badge">100% FREE</div>
+      <h1>🚀 Sazio AI</h1>
+      <p>
+        Create viral content, strong hooks, scripts, captions, and SEO in seconds.
+        Fast, simple, and built for creators.
+      </p>
+    </div>
 
-<div class="container">
+    <div class="grid">
+      <div class="card">
+        <h2>Generate Content</h2>
+        <div class="subtext">
+          Enter your idea, speak your idea, select content type, and get an instant AI result.
+        </div>
 
-<div class="card">
-<h2>🚀 Sazio AI</h2>
-<p>Free AI tool for viral scripts, hooks & SEO</p>
-</div>
+        <input id="idea" placeholder="Enter your idea" />
 
-<div class="card">
+        <select id="type">
+          <option value="video">Video</option>
+          <option value="post">Post</option>
+          <option value="story">Story</option>
+          <option value="ad">Ad</option>
+        </select>
 
-<input id="idea" placeholder="Enter your idea">
+        <textarea id="goal" placeholder="What do you want? (script, hook, SEO, caption)"></textarea>
 
-<select id="type">
-<option value="video">Video</option>
-<option value="post">Post</option>
-<option value="story">Story</option>
-<option value="ad">Ad</option>
-</select>
+        <div class="button-row">
+          <button class="primary" id="generateBtn" onclick="generate()">Generate</button>
+          <button class="voice" id="voiceBtn" onclick="startVoice()">Voice Input</button>
+          <button class="secondary" onclick="copyText()">Copy Result</button>
+        </div>
 
-<textarea id="goal" placeholder="What do you want? (script, hook, SEO)"></textarea>
+        <div class="result-wrap">
+          <div class="status" id="status">Ready</div>
+          <div id="output" class="result">Your result will appear here...</div>
+        </div>
+      </div>
 
-<button class="generate" onclick="generate()">Generate</button>
-<button class="copy" onclick="copyText()">Copy Result</button>
+      <div class="card">
+        <h2>What Sazio Can Do</h2>
+        <div class="features">
+          <div class="feature">
+            <b>Viral Titles & Hooks</b>
+            <span>Get attention-grabbing content ideas built for high retention.</span>
+          </div>
+          <div class="feature">
+            <b>Scripts & Story Flow</b>
+            <span>Create usable script structure for reels, shorts, posts, and stories.</span>
+          </div>
+          <div class="feature">
+            <b>SEO & Captions</b>
+            <span>Generate content-ready captions, search-friendly output, and better packaging.</span>
+          </div>
+          <div class="feature">
+            <b>Voice Friendly</b>
+            <span>Speak your idea and let Sazio turn it into usable content quickly.</span>
+          </div>
+        </div>
+      </div>
+    </div>
 
-<div class="status" id="status">Ready</div>
-<div id="output">Result will appear here...</div>
+    <div class="card">
+      <h2>Example</h2>
+      <div class="example">
+        <b>Idea:</b> Poor boy success story<br>
+        <b>Type:</b> Story<br>
+        <b>Output:</b> Title + Hook + Script + SEO + Analysis
+      </div>
+    </div>
 
-</div>
+    <div class="trust">
+      Safe AI creator tool • Multi-purpose content generation • Honest analysis • Built for fast creation
+    </div>
 
-<div class="footer">
-Sazio AI • No login • Free creator tool 🚀
-</div>
+    <div class="footer">
+      Sazio AI • Free Creator Tool • Voice input enabled
+    </div>
+  </div>
 
-</div>
+  <script>
+    let recognitionInstance = null;
+    let isListening = false;
 
-<script>
-async function generate() {
-  const idea = document.getElementById("idea").value.trim();
-  const type = document.getElementById("type").value;
-  const goal = document.getElementById("goal").value.trim();
+    async function generate() {
+      const idea = document.getElementById("idea").value.trim();
+      const type = document.getElementById("type").value;
+      const goal = document.getElementById("goal").value.trim();
 
-  const box = document.getElementById("output");
-  const status = document.getElementById("status");
+      const box = document.getElementById("output");
+      const status = document.getElementById("status");
+      const generateBtn = document.getElementById("generateBtn");
 
-  if (!idea) {
-    box.innerText = "⚠️ Enter idea first";
-    return;
-  }
+      if (!idea) {
+        box.innerText = "⚠️ Enter idea first";
+        status.innerText = "Idea required";
+        return;
+      }
 
-  status.innerText = "⚡ Generating...";
-  box.innerText = "⏳ Please wait...";
+      generateBtn.disabled = true;
+      status.innerText = "Generating...";
+      box.innerText = "⏳ Please wait...";
 
-  try {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 15000);
+      try {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 20000);
 
-    const res = await fetch("/api/generate", {
-      method: "POST",
-      headers: {"Content-Type":"application/json"},
-      signal: controller.signal,
-      body: JSON.stringify({
-        idea: idea,
-        type: type,
-        output: goal
-      })
-    });
+        const res = await fetch("/api/generate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          signal: controller.signal,
+          body: JSON.stringify({
+            idea: idea,
+            type: type,
+            output: goal
+          })
+        });
 
-    clearTimeout(timeout);
+        clearTimeout(timeout);
 
-    const data = await res.json();
+        const data = await res.json();
 
-    if (!data || !data.result) {
-      box.innerText = "❌ No AI response";
-      status.innerText = "Error";
-      return;
+        if (!data || !data.result) {
+          box.innerText = "❌ No AI response";
+          status.innerText = "Error";
+          generateBtn.disabled = false;
+          return;
+        }
+
+        box.innerText = data.result;
+        status.innerText = "✅ Done";
+      } catch (e) {
+        box.innerText = "❌ Slow internet or timeout";
+        status.innerText = "Error";
+      }
+
+      generateBtn.disabled = false;
     }
 
-    // 🔥 STRUCTURED OUTPUT (SAFE VERSION)
-    let text = data.result;
-
-    function extract(label){
-      let part = text.split(label);
-      return part[1] ? part[1].split("\n")[0].trim() : "";
+    function copyText() {
+      const text = document.getElementById("output").innerText;
+      navigator.clipboard.writeText(text).then(function () {
+        document.getElementById("status").innerText = "📋 Copied";
+      }).catch(function () {
+        document.getElementById("status").innerText = "Copy failed";
+      });
     }
 
-    const formatted = `
-📌 Title:
-${extract("Title")}
+    function startVoice() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      const status = document.getElementById("status");
+      const voiceBtn = document.getElementById("voiceBtn");
+      const ideaInput = document.getElementById("idea");
 
-🔥 Hook:
-${extract("Hook")}
+      if (!SpeechRecognition) {
+        status.innerText = "Voice not supported in this browser";
+        return;
+      }
 
-🎬 Script:
-${extract("Script")}
+      if (isListening && recognitionInstance) {
+        recognitionInstance.stop();
+        return;
+      }
 
-📊 SEO:
-${extract("SEO")}
-`;
+      recognitionInstance = new SpeechRecognition();
+      recognitionInstance.lang = "auto";
+      recognitionInstance.interimResults = false;
+      recognitionInstance.maxAlternatives = 1;
 
-    box.innerText = formatted || text;
-    status.innerText = "✅ Done";
+      isListening = true;
+      voiceBtn.innerText = "Listening...";
+      status.innerText = "🎤 Speak now...";
 
-  } catch (e) {
-    box.innerText = "❌ Slow internet or timeout";
-    status.innerText = "Error";
-  }
-}
+      recognitionInstance.onresult = function(event) {
+        const transcript = event.results[0][0].transcript;
+        ideaInput.value = transcript;
+        status.innerText = "Voice input captured";
+      };
 
-function copyText() {
-  const text = document.getElementById("output").innerText;
-  navigator.clipboard.writeText(text);
-  document.getElementById("status").innerText = "📋 Copied";
-}
-</script>
+      recognitionInstance.onerror = function() {
+        status.innerText = "Voice input error";
+      };
 
+      recognitionInstance.onend = function() {
+        isListening = false;
+        voiceBtn.innerText = "Voice Input";
+      };
+
+      recognitionInstance.start();
+    }
+  </script>
 </body>
 </html>
