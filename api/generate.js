@@ -8,8 +8,13 @@ export default async function handler(req, res) {
       return res.status(500).json({ result: "API KEY NOT FOUND" });
     }
 
-    const { idea } = req.body || {};
+    const { idea, type, output } = req.body || {};
     const safeIdea = typeof idea === "string" ? idea.trim() : "";
+    const safeType = typeof type === "string" && type.trim() ? type.trim() : "content";
+    const safeOutput =
+      typeof output === "string" && output.trim()
+        ? output.trim()
+        : "title, hook, script, SEO, analysis";
 
     if (!safeIdea) {
       return res.status(400).json({ result: "Idea required" });
@@ -21,98 +26,161 @@ export default async function handler(req, res) {
       return "en";
     }
 
+    function detectTone(text) {
+      const lower = text.toLowerCase();
+      if (
+        lower.includes("sad") ||
+        lower.includes("emotional") ||
+        lower.includes("गरीब") ||
+        lower.includes("दर्द") ||
+        lower.includes("संघर्ष") ||
+        lower.includes("रो") ||
+        lower.includes("heart")
+      ) {
+        return "emotional";
+      }
+      if (
+        lower.includes("funny") ||
+        lower.includes("comedy") ||
+        lower.includes("मजेदार") ||
+        lower.includes("हास्य")
+      ) {
+        return "funny";
+      }
+      if (
+        lower.includes("motivation") ||
+        lower.includes("success") ||
+        lower.includes("सफलता") ||
+        lower.includes("मेहनत")
+      ) {
+        return "motivational";
+      }
+      return "general";
+    }
+
     function buildFallback(text) {
       const lang = detectLanguage(text);
+      const tone = detectTone(text);
 
       if (lang === "hi") {
+        let hook = "क्या आपने कभी सोचा है कि इस कहानी के पीछे कितनी तकलीफ और उम्मीद छिपी हो सकती है?";
+        let strength = "Idea emotional aur relatable hai.";
+        let weakness = "Hook aur zyada specific ho sakta hai.";
+        let improve = "Shuruaat me shock, danger, ya curiosity aur badhao.";
+        let score = "72%";
+
+        if (tone === "funny") {
+          hook = "एक छोटी सी बात कैसे मजेदार chaos में बदल सकती है, यही इस idea की ताकत है।";
+          strength = "Idea entertaining aur easy-to-watch hai.";
+          weakness = "Comedy point aur sharper ho sakta hai.";
+          improve = "Ek unexpected twist ya punchline aur jodo.";
+          score = "70%";
+        } else if (tone === "motivational") {
+          hook = "जब हालात हार मानने को कहें, तभी असली कहानी शुरू होती है।";
+          strength = "Idea inspiring aur audience-friendly hai.";
+          weakness = "Outcome aur clear ho sakta hai.";
+          improve = "Ek strong before-after moment jodo.";
+          score = "74%";
+        }
+
         return `Title:
-- ${text} की भावुक कहानी
+- ${text} की अनकही कहानी
 - ${text} का संघर्ष
-- ${text} की अनकही दास्तान
+- ${text} से जुड़ी एक भावुक दास्तान
 
 Hook:
-- क्या आपने कभी सोचा है कि ${text} के पीछे कितनी तकलीफ छिपी हो सकती है?
+- ${hook}
 
 Script:
-- यह कहानी एक गहरे संघर्ष से शुरू होती है।
-- हालात मुश्किल हैं, लेकिन उम्मीद अभी बाकी है।
-- सही प्रस्तुति के साथ यह idea लोगों का ध्यान खींच सकता है।
+- यह कहानी एक ऐसे मोड़ से शुरू होती है जो तुरंत ध्यान खींच सकती है।
+- बीच में संघर्ष, भावना और उम्मीद का तत्व इस idea को मजबूत बनाता है।
+- सही प्रस्तुति और बेहतर hook के साथ यह content अच्छा perform कर सकता है।
 
 SEO:
-Keywords: ${text}, emotional story, viral video
-Hashtags: #story #viral #emotional
-Caption: एक ऐसी कहानी जो दिल को छू सकती है।
+Keywords: ${text}, viral story, emotional content
+Hashtags: #story #viral #content
+Caption: एक ऐसी कहानी जो लोगों का ध्यान रोक सकती है।
 
 Analysis:
-Score: 68%
-Strength: Idea emotional aur relatable hai.
-Weakness: Hook aur specific ban सकता है.
-Improve: शुरुआत में shock ya curiosity aur बढ़ाओ.`;
+Score: ${score}
+Strength: ${strength}
+Weakness: ${weakness}
+Improve: ${improve}`;
       }
 
       if (lang === "ar") {
         return `Title:
-- قصة مؤثرة عن ${text}
+- القصة غير المروية عن ${text}
 - صراع ${text}
-- الحكاية غير المروية لـ ${text}
+- حكاية مؤثرة عن ${text}
 
 Hook:
-- هل فكرت يومًا كم الألم المخفي وراء ${text}؟
+- هل فكرت يومًا كم الألم أو الأمل المخفي وراء ${text}؟
 
 Script:
-- تبدأ هذه الفكرة بصراع واضح ومؤثر.
-- الظروف صعبة لكن ما زال هناك أمل.
-- مع تقديم أقوى يمكن أن تجذب هذه الفكرة الانتباه.
+- تبدأ هذه الفكرة بلحظة قادرة على جذب الانتباه بسرعة.
+- وجود الصراع والمشاعر يجعل الفكرة أقوى وأكثر قربًا من الناس.
+- مع افتتاحية أفضل يمكن أن يزداد تأثير هذا المحتوى بشكل واضح.
 
 SEO:
-Keywords: ${text}, قصة مؤثرة, فيديو قصير
+Keywords: ${text}, قصة مؤثرة, محتوى قصير
 Hashtags: #قصة #ترند #مؤثر
-Caption: فكرة بسيطة لكن يمكن أن تلامس القلوب.
+Caption: فكرة بسيطة لكنها تحمل تأثيرًا قويًا.
 
 Analysis:
-Score: 68%
-Strength: الفكرة عاطفية وقريبة من الناس.
-Weakness: الخطاف يحتاج أن يكون أقوى.
-Improve: ابدأ بجملة صادمة أو فضولية أكثر.`;
+Score: 72%
+Strength: الفكرة عاطفية وقريبة من الجمهور.
+Weakness: المقدمة تحتاج خصوصية أكبر.
+Improve: ابدأ بجملة أقوى فيها فضول أو صدمة.`;
       }
 
       return `Title:
-- Emotional story about ${text}
-- The struggle behind ${text}
 - The untold story of ${text}
+- The struggle behind ${text}
+- A powerful story about ${text}
 
 Hook:
-- Have you ever thought about how much hidden struggle can exist behind ${text}?
+- Have you ever thought about how much hidden struggle or emotion can exist behind ${text}?
 
 Script:
-- This idea starts with a clear emotional struggle.
-- The situation is difficult, but hope still remains.
-- With stronger presentation, this idea can attract viewers.
+- This idea starts with a moment that can quickly grab attention.
+- The struggle and emotion in the middle make the content more watchable.
+- With a stronger opening, this content can perform much better.
 
 SEO:
-Keywords: ${text}, emotional story, viral content
-Hashtags: #story #viral #emotional
-Caption: A simple idea that can connect with people.
+Keywords: ${text}, viral story, emotional content
+Hashtags: #story #viral #content
+Caption: A simple idea that can connect with viewers.
 
 Analysis:
-Score: 68%
-Strength: The idea is emotional and relatable.
+Score: 72%
+Strength: The idea is relatable and emotionally engaging.
 Weakness: The hook can be more specific.
-Improve: Start with stronger curiosity or shock.`;
+Improve: Start with stronger curiosity, danger, or surprise.`;
     }
 
     const prompt = `
 Reply ONLY in the SAME language as the user's idea.
 
-Be practical, short, complete and real.
-No greeting.
-No intro.
-No fake placeholders.
-No "title 1", "script line" type text.
+You are Sazio AI, an honest creator assistant.
 
-Idea: ${safeIdea}
+STRICT RULES:
+- No greeting
+- No intro
+- No fake promises like "100% viral"
+- No placeholder text
+- No incomplete lines
+- Keep output compact, strong, and useful
+- Be realistic, not scammy
+- Hook must be stronger than normal generic content
+- Titles should be clickable and emotionally or curiosity driven
+- Analysis should be honest and practical
 
-Return in this format:
+User idea: ${safeIdea}
+Content type: ${safeType}
+User wants: ${safeOutput}
+
+Return EXACTLY in this format:
 
 Title:
 - ...
@@ -154,8 +222,8 @@ Improve: ...
             }
           ],
           generationConfig: {
-            temperature: 0.5,
-            maxOutputTokens: 600
+            temperature: 0.55,
+            maxOutputTokens: 650
           }
         })
       }
@@ -190,6 +258,7 @@ Improve: ...
       .replace(/#tag\d/gi, "")
       .replace(/Short caption/gi, "")
       .replace(/A strong hook/gi, "")
+      .replace(/\n{3,}/g, "\n\n")
       .trim();
 
     if (!text) {
