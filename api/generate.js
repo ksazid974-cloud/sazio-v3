@@ -8,44 +8,26 @@ export default async function handler(req, res) {
       return res.status(500).json({ result: "API KEY NOT FOUND" });
     }
 
-    const { idea, type, output } = req.body || {};
-
+    const { idea } = req.body || {};
     const safeIdea = typeof idea === "string" ? idea.trim() : "";
-    const safeType = typeof type === "string" && type.trim() ? type.trim() : "content";
-    const safeOutput =
-      typeof output === "string" && output.trim()
-        ? output.trim()
-        : "title, hook, script, SEO";
 
     if (!safeIdea) {
       return res.status(400).json({ result: "Idea required" });
     }
 
     const prompt = `
-Reply ONLY in the SAME language as the user's idea.
+Reply in the SAME language as this input:
+"${safeIdea}"
 
-You are Sazio AI.
-Be practical, short, clean, and honest.
-No greeting.
-No intro.
-No fake claims.
-No empty bullets.
-Do not skip any section.
-Keep every line complete.
-
-User Idea: ${safeIdea}
-Content Type: ${safeType}
-User Wants: ${safeOutput}
-
-Return in EXACT format below:
+Return ONLY this exact format, fully completed:
 
 Title:
-- [short strong title]
-- [short strong title]
-- [short strong title]
+- [short title]
+- [short title]
+- [short title]
 
 Hook:
-- [1 complete strong hook line]
+- [one complete hook line]
 
 Script:
 - [line 1]
@@ -53,8 +35,8 @@ Script:
 - [line 3]
 
 SEO:
-Keywords: [3 short keywords]
-Hashtags: [3 short hashtags]
+Keywords: [3 keywords]
+Hashtags: [3 hashtags]
 Caption: [1 short caption]
 
 Analysis:
@@ -63,10 +45,13 @@ Strength: [1 short point]
 Weakness: [1 short point]
 Improve: [1 short point]
 
-IMPORTANT:
-- Keep total response compact
-- Finish every sentence
-- Do not write anything outside this format
+Rules:
+- No greeting
+- No intro
+- No extra text
+- No incomplete line
+- Keep every line short
+- Finish all sections
 `;
 
     const response = await fetch(
@@ -84,8 +69,8 @@ IMPORTANT:
             }
           ],
           generationConfig: {
-            temperature: 0.6,
-            maxOutputTokens: 650
+            temperature: 0.4,
+            maxOutputTokens: 400
           }
         })
       }
@@ -107,13 +92,8 @@ IMPORTANT:
       });
     }
 
-    const cleanText = text
-      .replace(/\n{3,}/g, "\n\n")
-      .replace(/[ \t]+\n/g, "\n")
-      .trim();
-
     return res.status(200).json({
-      result: cleanText
+      result: text.trim()
     });
   } catch (error) {
     return res.status(500).json({
