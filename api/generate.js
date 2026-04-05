@@ -1,42 +1,49 @@
 export default async function handler(req, res) {
+  // Method check
   if (req.method !== "POST") {
     return res.status(405).json({ result: "Method not allowed" });
   }
 
   try {
+    // API key check
     if (!process.env.GEMINI_API_KEY) {
       return res.status(500).json({ result: "API KEY NOT FOUND" });
     }
 
     const { idea, type, output } = req.body || {};
 
-    const prompt = `
-You are a WORLD-CLASS viral content creator like top YouTubers.
+    // Input safety
+    if (!idea || idea.trim() === "") {
+      return res.status(400).json({ result: "Idea is required" });
+    }
 
-Create HIGHLY VIRAL ${type || "video"} content for:
-"${idea || "content idea"}"
+    // 🎯 FINAL MASTER PROMPT
+    const prompt = `
+You are Sazio AI — a professional viral content creator system.
+
+Create HIGH QUALITY ${type || "video"} content for:
+"${idea}"
 
 User wants:
-${output || "full viral content"}
+${output || "title, hook, script, SEO"}
 
-Rules:
-- Hook must grab attention in first 3 seconds
-- Titles must be clickbait + curiosity based
-- Script should be emotional + engaging
-- Add psychological triggers (money, fear, curiosity, surprise)
-- Make content feel like 10M+ views potential
+IMPORTANT RULES:
+- Always return clean structured output
+- Keep content simple, powerful, and engaging
+- Make hook attention-grabbing (first 3 seconds)
+- Script should be short, emotional, and easy to understand
+- SEO should include keywords and hashtags
+- No unnecessary long paragraphs
 
-Output format:
+OUTPUT FORMAT (STRICT):
 
-🔥 Title Ideas (5)
-💡 Content Angle
-🎯 Hook (very strong)
-🎬 Script (short viral format)
-📈 SEO Tags (high search keywords)
-
-Make it addictive and share-worthy.
+Title:
+Hook:
+Script:
+SEO:
 `;
 
+    // API call
     const response = await fetch(
       "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
       {
@@ -57,21 +64,28 @@ Make it addictive and share-worthy.
 
     const data = await response.json();
 
+    // Error handling
     if (!response.ok) {
       return res.status(500).json({
-        result: "ERROR: " + JSON.stringify(data)
+        result: "AI ERROR: " + JSON.stringify(data)
       });
     }
 
-    const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+    const text =
+      data?.candidates?.[0]?.content?.parts?.[0]?.text;
 
     if (!text) {
       return res.status(500).json({
-        result: "NO TEXT: " + JSON.stringify(data)
+        result: "No AI response"
       });
     }
 
-    return res.status(200).json({ result: text });
+    // Clean output
+    const cleanText = text.trim();
+
+    return res.status(200).json({
+      result: cleanText
+    });
 
   } catch (error) {
     return res.status(500).json({
