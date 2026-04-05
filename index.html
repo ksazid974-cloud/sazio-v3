@@ -24,10 +24,6 @@ body {
   padding: 30px 15px;
 }
 
-.hero h1 {
-  font-size: 28px;
-}
-
 .section {
   background: rgba(255,255,255,0.05);
   padding: 20px;
@@ -57,11 +53,14 @@ body {
 }
 
 .output {
-  margin-top: 15px;
-  padding: 15px;
+  margin-top: 20px;
+}
+
+.block {
   background: rgba(255,255,255,0.05);
+  padding: 15px;
   border-radius: 12px;
-  white-space: pre-wrap;
+  margin-top: 10px;
 }
 </style>
 </head>
@@ -78,15 +77,13 @@ body {
 <div class="section">
 <h2>AI Content Generator</h2>
 
-<input id="idea" class="input" placeholder="Enter your idea (e.g. gym video, travel vlog, product ad)" />
-
-<input id="type" class="input" placeholder="Content type (video, reel, ad, story, post)" />
-
-<textarea id="goal" class="textarea" placeholder="What do you want? (script, idea, scenes, SEO, all)"></textarea>
+<input id="idea" class="input" placeholder="Enter your idea" />
+<input id="type" class="input" placeholder="Content type (video, reel, ad, story)" />
+<textarea id="goal" class="textarea" placeholder="What do you want? (script, idea, SEO, all)"></textarea>
 
 <button class="button" onclick="generate()">Generate</button>
 
-<div id="output" class="output">Your result will appear here...</div>
+<div id="output" class="output"></div>
 </div>
 
 </div>
@@ -98,27 +95,28 @@ function generate() {
   let goal = document.getElementById("goal").value;
 
   let result = `
-TITLE IDEAS:
-- Best ${idea} for ${type}
-- Viral ${type} about ${idea}
+  <div class="block"><b>🔥 TITLE IDEAS</b><br>
+  - Viral ${type} about ${idea}<br>
+  - Best ${idea} content idea</div>
 
-CONCEPT:
-This content focuses on ${idea} designed for ${type} audience.
+  <div class="block"><b>💡 CONTENT IDEA</b><br>
+  Create a ${type} around ${idea} with strong hook and engagement.</div>
 
-STRUCTURE:
-1. Strong hook
-2. Main content
-3. Highlight moment
-4. Ending
+  <div class="block"><b>🎬 SCRIPT STRUCTURE</b><br>
+  1. Hook (first 3 sec)<br>
+  2. Problem or curiosity<br>
+  3. Main content<br>
+  4. Highlight moment<br>
+  5. Ending + CTA</div>
 
-OUTPUT GOAL:
-${goal}
+  <div class="block"><b>🎯 OUTPUT GOAL</b><br>
+  ${goal}</div>
 
-SEO TAGS:
-${idea}, ${type}, viral content, trending
-`;
+  <div class="block"><b>🚀 SEO TAGS</b><br>
+  ${idea}, ${type}, viral, trending, content</div>
+  `;
 
-  document.getElementById("output").innerText = result;
+  document.getElementById("output").innerHTML = result;
 }
 </script>
 
