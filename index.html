@@ -6,169 +6,485 @@
 <title>Sazio AI</title>
 
 <style>
+* {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
-  font-family: Arial;
-  background: linear-gradient(135deg,#0f172a,#020617);
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg, #0f172a, #020617);
   color: white;
 }
+
 .container {
-  max-width: 600px;
+  max-width: 980px;
   margin: auto;
   padding: 20px;
 }
-.card {
+
+.hero {
+  text-align: center;
+  padding: 28px 18px;
   background: rgba(255,255,255,0.05);
-  padding: 20px;
-  border-radius: 15px;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 22px;
   margin-bottom: 20px;
 }
-input,textarea {
-  width: 100%;
-  padding: 12px;
-  margin-top: 10px;
-  border-radius: 10px;
-  border: none;
-  background: rgba(255,255,255,0.1);
-  color: white;
+
+.badge {
+  display: inline-block;
+  background: #ffffff;
+  color: #0f172a;
+  font-size: 12px;
+  font-weight: bold;
+  padding: 8px 14px;
+  border-radius: 999px;
+  margin-bottom: 12px;
 }
+
+.hero h1 {
+  margin: 0 0 10px;
+  font-size: 34px;
+}
+
+.hero p {
+  margin: 0;
+  color: #cbd5e1;
+  line-height: 1.6;
+  font-size: 16px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+
+.card {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 20px;
+  padding: 20px;
+}
+
+.card h2 {
+  margin-top: 0;
+  margin-bottom: 12px;
+  font-size: 24px;
+}
+
+.subtext {
+  color: #cbd5e1;
+  line-height: 1.5;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+input, select, textarea {
+  width: 100%;
+  padding: 13px 14px;
+  margin-top: 10px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.08);
+  color: #ffffff;
+  font-size: 15px;
+  outline: none;
+}
+
+select option {
+  color: #000000;
+}
+
+textarea {
+  min-height: 110px;
+  resize: vertical;
+}
+
+.button-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  margin-top: 14px;
+}
+
 button {
   width: 100%;
   padding: 14px;
-  margin-top: 10px;
-  border-radius: 10px;
   border: none;
-  font-weight: bold;
+  border-radius: 12px;
   cursor: pointer;
+  font-weight: bold;
+  font-size: 15px;
 }
-.generate { background: white; color: black; }
-.copy { background: #1e293b; color: white; }
-.voice { background: #2563eb; color: white; }
 
-#output {
-  margin-top: 10px;
-  white-space: pre-line;
-  line-height: 1.6;
+.primary {
+  background: #ffffff;
+  color: #0f172a;
+}
+
+.secondary {
+  background: rgba(255,255,255,0.1);
+  color: #ffffff;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.voice {
+  background: #2563eb;
+  color: white;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.warn {
+  background: #334155;
+  color: white;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.result-wrap {
+  margin-top: 14px;
 }
 
 .status {
+  color: #cbd5e1;
   font-size: 14px;
+  margin-bottom: 10px;
+}
+
+.result {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  padding: 16px;
+  white-space: pre-line;
+  line-height: 1.7;
+  min-height: 180px;
+}
+
+.features {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.feature {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+  padding: 14px;
+}
+
+.feature b {
+  display: block;
+  margin-bottom: 6px;
+  color: #ffffff;
+}
+
+.feature span {
+  color: #cbd5e1;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.example {
+  color: #cbd5e1;
+  line-height: 1.7;
+  font-size: 15px;
+}
+
+.trust {
+  margin-top: 20px;
+  text-align: center;
   color: #94a3b8;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.footer {
+  margin-top: 30px;
+  text-align: center;
+  color: #94a3b8;
+  font-size: 13px;
+  padding-bottom: 10px;
+}
+
+@media (min-width: 900px) {
+  .grid {
+    grid-template-columns: 1.08fr 0.92fr;
+  }
+
+  .button-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .features {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 </style>
 </head>
-
 <body>
+  <div class="container">
+    <div class="hero">
+      <div class="badge">100% FREE</div>
+      <h1>🚀 Sazio AI</h1>
+      <p>
+        Create viral content, strong hooks, scripts, captions, and SEO in seconds.
+        Fast, simple, and built for creators.
+      </p>
+    </div>
 
-<div class="container">
+    <div class="grid">
+      <div class="card">
+        <h2>Generate Content</h2>
+        <div class="subtext">
+          Enter your idea, speak your idea, and get instant AI content with smart memory.
+        </div>
 
-<div class="card">
-<h2>🚀 Sazio AI</h2>
-<p>Smart Creator AI</p>
-</div>
+        <input id="idea" placeholder="Enter your idea">
 
-<div class="card">
+        <select id="type">
+          <option value="video">Video</option>
+          <option value="post">Post</option>
+          <option value="story">Story</option>
+          <option value="ad">Ad</option>
+        </select>
 
-<input id="idea" placeholder="Enter your idea">
+        <textarea id="goal" placeholder="What do you want? (script, hook, SEO, caption, full pack)"></textarea>
 
-<button class="generate" onclick="generate()">Generate</button>
-<button class="voice" onclick="startVoice()">Voice Input</button>
-<button class="copy" onclick="copyText()">Copy</button>
+        <div class="button-row">
+          <button class="primary" id="generateBtn" onclick="generate()">Generate</button>
+          <button class="voice" id="voiceBtn" onclick="startVoice()">Voice Input</button>
+          <button class="secondary" onclick="copyText()">Copy Result</button>
+          <button class="warn" id="autoBtn" onclick="toggleAuto()">Auto: ON</button>
+          <button class="secondary" onclick="clearMemory()">Clear Memory</button>
+        </div>
 
-<div class="status" id="status">Ready</div>
-<div id="output">Result will appear here...</div>
+        <div class="result-wrap">
+          <div class="status" id="status">Ready</div>
+          <div id="output" class="result">Your result will appear here...</div>
+        </div>
+      </div>
 
-</div>
+      <div class="card">
+        <h2>What Sazio Can Do</h2>
+        <div class="features">
+          <div class="feature">
+            <b>Viral Titles & Hooks</b>
+            <span>Get attention-grabbing ideas built for stronger retention.</span>
+          </div>
+          <div class="feature">
+            <b>Scripts & Story Flow</b>
+            <span>Create usable scripts for shorts, reels, posts, ads, and stories.</span>
+          </div>
+          <div class="feature">
+            <b>SEO & Captions</b>
+            <span>Generate keywords, hashtags, captions, and smart content packaging.</span>
+          </div>
+          <div class="feature">
+            <b>Voice + Memory</b>
+            <span>Speak your idea, save your last output, and continue later easily.</span>
+          </div>
+        </div>
+      </div>
+    </div>
 
-</div>
+    <div class="card">
+      <h2>Example</h2>
+      <div class="example">
+        <b>Idea:</b> Ek garib kisan ki story bnao<br>
+        <b>Type:</b> Story<br>
+        <b>Output:</b> Title + Hook + Script + SEO + Analysis
+      </div>
+    </div>
+
+    <div class="trust">
+      Safe AI creator tool • Multi-purpose content generation • Honest analysis • Built for fast creation
+    </div>
+
+    <div class="footer">
+      Sazio AI • Free Creator Tool • Voice + Local Memory Enabled
+    </div>
+  </div>
 
 <script>
-let recognition;
+let recognitionInstance = null;
+let isListening = false;
+let autoMode = true;
 
-// 🔥 LOAD MEMORY
-window.onload = function() {
+window.onload = function () {
   const savedIdea = localStorage.getItem("sazio_idea");
+  const savedType = localStorage.getItem("sazio_type");
+  const savedGoal = localStorage.getItem("sazio_goal");
   const savedOutput = localStorage.getItem("sazio_output");
+  const savedAuto = localStorage.getItem("sazio_auto");
 
   if (savedIdea) {
     document.getElementById("idea").value = savedIdea;
   }
 
+  if (savedType) {
+    document.getElementById("type").value = savedType;
+  }
+
+  if (savedGoal) {
+    document.getElementById("goal").value = savedGoal;
+  }
+
   if (savedOutput) {
     document.getElementById("output").innerText = savedOutput;
   }
+
+  if (savedAuto !== null) {
+    autoMode = savedAuto === "true";
+    document.getElementById("autoBtn").innerText = autoMode ? "Auto: ON" : "Auto: OFF";
+  }
 };
 
-// 🔥 SAVE MEMORY
-function saveMemory(idea, output) {
+function saveMemory(idea, type, goal, output) {
   localStorage.setItem("sazio_idea", idea);
+  localStorage.setItem("sazio_type", type);
+  localStorage.setItem("sazio_goal", goal);
   localStorage.setItem("sazio_output", output);
+  localStorage.setItem("sazio_auto", autoMode ? "true" : "false");
 }
 
-// 🔥 GENERATE
+function toggleAuto() {
+  autoMode = !autoMode;
+  document.getElementById("autoBtn").innerText = autoMode ? "Auto: ON" : "Auto: OFF";
+  localStorage.setItem("sazio_auto", autoMode ? "true" : "false");
+  document.getElementById("status").innerText = autoMode ? "Auto mode on" : "Auto mode off";
+}
+
+function clearMemory() {
+  localStorage.removeItem("sazio_idea");
+  localStorage.removeItem("sazio_type");
+  localStorage.removeItem("sazio_goal");
+  localStorage.removeItem("sazio_output");
+
+  document.getElementById("idea").value = "";
+  document.getElementById("type").value = "video";
+  document.getElementById("goal").value = "";
+  document.getElementById("output").innerText = "Memory cleared";
+  document.getElementById("status").innerText = "Memory cleared";
+}
+
 async function generate() {
   const idea = document.getElementById("idea").value.trim();
+  const type = document.getElementById("type").value;
+  const goal = document.getElementById("goal").value.trim();
+
   const box = document.getElementById("output");
   const status = document.getElementById("status");
+  const generateBtn = document.getElementById("generateBtn");
 
   if (!idea) {
-    box.innerText = "Enter idea first";
+    box.innerText = "⚠️ Enter idea first";
+    status.innerText = "Idea required";
     return;
   }
 
+  generateBtn.disabled = true;
   status.innerText = "Generating...";
-  box.innerText = "Please wait...";
+  box.innerText = "⏳ Please wait...";
 
   try {
     const res = await fetch("/api/generate", {
       method: "POST",
-      headers: {"Content-Type":"application/json"},
-      body: JSON.stringify({ idea })
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        idea: idea,
+        type: type,
+        output: goal
+      })
     });
 
     const data = await res.json();
 
+    if (!data || !data.result) {
+      box.innerText = "❌ No AI response";
+      status.innerText = "Error";
+      generateBtn.disabled = false;
+      return;
+    }
+
     box.innerText = data.result;
-    status.innerText = "Done";
-
-    // 🔥 SAVE
-    saveMemory(idea, data.result);
-
+    status.innerText = "✅ Done";
+    saveMemory(idea, type, goal, data.result);
   } catch (e) {
-    box.innerText = "Error";
+    box.innerText = "❌ Error";
     status.innerText = "Error";
   }
+
+  generateBtn.disabled = false;
 }
 
-// 🔥 VOICE
+function copyText() {
+  const text = document.getElementById("output").innerText;
+  navigator.clipboard.writeText(text).then(function () {
+    document.getElementById("status").innerText = "Copied";
+  }).catch(function () {
+    document.getElementById("status").innerText = "Copy failed";
+  });
+}
+
 function startVoice() {
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const status = document.getElementById("status");
+  const voiceBtn = document.getElementById("voiceBtn");
+  const ideaInput = document.getElementById("idea");
 
   if (!SpeechRecognition) {
-    alert("Voice not supported");
+    status.innerText = "Voice not supported";
     return;
   }
 
-  recognition = new SpeechRecognition();
-  recognition.lang = "hi-IN";
-  recognition.interimResults = false;
+  if (isListening && recognitionInstance) {
+    recognitionInstance.stop();
+    return;
+  }
 
-  recognition.start();
+  recognitionInstance = new SpeechRecognition();
+  recognitionInstance.lang = "hi-IN";
+  recognitionInstance.interimResults = false;
+  recognitionInstance.continuous = false;
+  recognitionInstance.maxAlternatives = 1;
 
-  document.getElementById("status").innerText = "Listening...";
+  isListening = true;
+  voiceBtn.innerText = "🎤 Listening...";
+  status.innerText = "बोलिए... पूरा बोलकर 1 सेकंड रुकिए";
 
-  recognition.onresult = function(event) {
-    const text = event.results[0][0].transcript;
-    document.getElementById("idea").value = text;
-    document.getElementById("status").innerText = "Voice captured";
+  let finalText = "";
+
+  recognitionInstance.onresult = function (event) {
+    finalText = event.results[0][0].transcript;
   };
-}
 
-// 🔥 COPY
-function copyText() {
-  const text = document.getElementById("output").innerText;
-  navigator.clipboard.writeText(text);
-  document.getElementById("status").innerText = "Copied";
+  recognitionInstance.onend = function () {
+    isListening = false;
+    voiceBtn.innerText = "Voice Input";
+
+    if (finalText && finalText.trim()) {
+      ideaInput.value = finalText.trim();
+      status.innerText = "✅ Voice captured";
+
+      if (autoMode) {
+        generate();
+      }
+    } else {
+      status.innerText = "⚠️ No voice detected";
+    }
+  };
+
+  recognitionInstance.onerror = function () {
+    status.innerText = "Voice error";
+    isListening = false;
+    voiceBtn.innerText = "Voice Input";
+  };
+
+  recognitionInstance.start();
 }
 </script>
 
