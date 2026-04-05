@@ -79,40 +79,84 @@ export default async function handler(req, res) {
       return "general";
     }
 
-    function extractCoreTopic(text, lang) {
+    function normalizeSpaces(text) {
+      return text.replace(/\s+/g, " ").trim();
+    }
+
+    function removeDuplicateWords(text) {
+      const words = normalizeSpaces(text).split(" ");
+      const result = [];
+
+      for (const word of words) {
+        const prev = result[result.length - 1];
+        if (!prev || prev.toLowerCase() !== word.toLowerCase()) {
+          result.push(word);
+        }
+      }
+
+      return result.join(" ");
+    }
+
+    function cleanupTopic(text, lang) {
       let t = text.trim();
 
       if (lang === "hi") {
         t = t
-          .replace(/\b(please|plz|idea|content|viral|seo|caption|hook|script|full pack|full package)\b/gi, "")
-          .replace(/\b(video|story|kahani|reel|short|ad)\s*(bnao|banao|do|de|likho)?\b/gi, "")
-          .replace(/\b(ek)\b/gi, "")
-          .replace(/\b(ki|ka|ke)\s*(story|kahani)\b/gi, "")
-          .replace(/\b(bnao|banao|do|de|likho)\b/gi, "")
-          .replace(/\s+/g, " ")
-          .trim();
+          .replace(/\b(please|plz|idea|content|viral|seo|caption|hook|script|full pack|full package)\b/gi, " ")
+          .replace(/\b(video|reel|short|ad)\b/gi, " ")
+          .replace(/\b(story|kahani)\s*(bnao|banao|do|de|likho)?\b/gi, " ")
+          .replace(/\b(bnao|banao|do|de|likho)\b/gi, " ")
+          .replace(/\b(ek)\b/gi, " ")
+          .replace(/\b(ki|ka|ke)\b\s*$/gi, " ")
+          .replace(/[^\w\u0900-\u097F\s]/g, " ");
+
+        t = normalizeSpaces(t);
+        t = removeDuplicateWords(t);
 
         if (!t) return "garib kisan";
         return t;
       }
 
       if (lang === "ar") {
-        t = t.replace(/\s+/g, " ").trim();
+        t = normalizeSpaces(t);
         return t || "قصة مؤثرة";
       }
 
       t = t
-        .replace(/\b(create|make|give|write|generate|viral|seo|caption|hook|script|full pack|full package)\b/gi, "")
-        .replace(/\b(video|story|reel|short|ad)\b/gi, "")
-        .replace(/\s+/g, " ")
-        .trim();
+        .replace(/\b(create|make|give|write|generate|viral|seo|caption|hook|script|full pack|full package)\b/gi, " ")
+        .replace(/\b(video|story|reel|short|ad)\b/gi, " ")
+        .replace(/[^\w\s]/g, " ");
+
+      t = normalizeSpaces(t);
+      t = removeDuplicateWords(t);
 
       return t || "powerful story";
     }
 
+    function toTitleCaseSimple(text) {
+      return text
+        .split(" ")
+        .filter(Boolean)
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(" ");
+    }
+
+    function buildKeywords(topic, lang) {
+      if (lang === "hi") {
+        const clean = topic.replace(/\b(ki|ka|ke)\b/gi, "").replace(/\s+/g, " ").trim();
+        return `${clean} story, ${clean} sangharsh, emotional short video`;
+      }
+
+      if (lang === "ar") {
+        return `${topic}, قصة مؤثرة, فيديو قصير`;
+      }
+
+      return `${topic}, emotional story, short video`;
+    }
+
     const lang = detectLanguage(safeIdea);
     const tone = detectTone(safeIdea);
-    const coreTopic = extractCoreTopic(safeIdea, lang);
+    const coreTopic = cleanupTopic(safeIdea, lang);
 
     function buildDefaults() {
       if (lang === "hi") {
@@ -140,14 +184,14 @@ export default async function handler(req, res) {
         }
 
         return {
-          title1: `${coreTopic} ki kahani`,
-          title2: `${coreTopic} ka sangharsh`,
-          title3: `${coreTopic} ki ankahi dastaan`,
+          title1: `${toTitleCaseSimple(coreTopic)} Ki Anokhi Kahani`,
+          title2: `${toTitleCaseSimple(coreTopic)} Ka Sangharsh`,
+          title3: `${toTitleCaseSimple(coreTopic)} Ki Ankahi Dastaan`,
           hook,
           script1: `Yeh idea shuruaat se hi logon ka dhyan kheench sakta hai.`,
           script2: `Isme bhavna, sangharsh aur curiosity ka achha mel hai.`,
           script3: `Better opening ke saath yeh content aur strong perform kar sakta hai.`,
-          keywords: `${coreTopic}, viral story, short video`,
+          keywords: buildKeywords(coreTopic, lang),
           hashtags: `#viral #story #content`,
           caption: `Ek aisa idea jo sahi presentation ke saath strong perform kar sakta hai.`,
           score,
@@ -167,7 +211,7 @@ export default async function handler(req, res) {
           script1: `تبدأ هذه الفكرة بطريقة يمكنها جذب الانتباه بسرعة.`,
           script2: `وجود الصراع والمشاعر يجعلها مناسبة للمحتوى القصير.`,
           script3: `مع بداية أقوى يمكن أن تحقق أداء أفضل.`,
-          keywords: `${coreTopic}, قصة مؤثرة, فيديو قصير`,
+          keywords: buildKeywords(coreTopic, lang),
           hashtags: `#قصة #ترند #محتوى`,
           caption: `فكرة بسيطة لكنها قادرة على جذب الانتباه.`,
           score: `72%`,
@@ -179,14 +223,14 @@ export default async function handler(req, res) {
       }
 
       return {
-        title1: `The story of ${coreTopic}`,
-        title2: `The struggle behind ${coreTopic}`,
-        title3: `The untold side of ${coreTopic}`,
+        title1: `The Story of ${toTitleCaseSimple(coreTopic)}`,
+        title2: `The Struggle Behind ${toTitleCaseSimple(coreTopic)}`,
+        title3: `The Untold Side of ${toTitleCaseSimple(coreTopic)}`,
         hook: `Have you ever thought about how much hidden struggle or emotion can exist behind ${coreTopic}?`,
         script1: `This idea can grab attention with a stronger opening.`,
         script2: `The emotional and curiosity angle gives it short-form potential.`,
         script3: `With a sharper first line, it can perform better.`,
-        keywords: `${coreTopic}, viral story, short video`,
+        keywords: buildKeywords(coreTopic, lang),
         hashtags: `#viral #story #content`,
         caption: `A simple idea that can perform better with stronger presentation.`,
         score: `72%`,
@@ -246,7 +290,7 @@ STRICT RULES:
 - No incomplete lines
 - Keep every line complete
 - Keep output short, useful, and natural
-- Do not repeat the user's command words like "story bnao" inside titles
+- Do not repeat command words like "story bnao" in titles
 - Use the main topic naturally
 - Hook should be strong and complete
 - Fill every section
@@ -341,9 +385,9 @@ Do not write anything outside these lines.
 
       if (!value) return fallback;
 
-      const cleaned = value
-        .replace(/\s+/g, " ")
-        .trim();
+      let cleaned = value.replace(/\s+/g, " ").trim();
+      cleaned = cleaned.replace(/\b(ki|ka|ke)\s+\1\b/gi, "$1");
+      cleaned = cleaned.replace(/\b(\w+)\s+\1\b/gi, "$1").trim();
 
       if (!cleaned) return fallback;
       if (badPatterns.some((p) => p.test(cleaned))) return fallback;
