@@ -6,89 +6,70 @@
 <title>Sazio AI</title>
 
 <style>
-*{box-sizing:border-box}
-body{margin:0;font-family:Arial;background:linear-gradient(135deg,#0f172a,#020617);color:#fff}
-.container{max-width:980px;margin:auto;padding:20px}
-.hero{text-align:center;padding:28px;background:rgba(255,255,255,0.05);border-radius:20px;margin-bottom:20px}
-.badge{background:#fff;color:#000;padding:6px 12px;border-radius:20px;font-size:12px}
-.grid{display:grid;gap:20px}
-.card{background:rgba(255,255,255,0.05);padding:20px;border-radius:20px}
-input,select,textarea{width:100%;padding:12px;margin-top:10px;border-radius:10px;background:#1e293b;color:#fff;border:none}
-button{width:100%;padding:12px;margin-top:10px;border-radius:10px;border:none;cursor:pointer}
-.primary{background:#fff;color:#000}
-.voice{background:#2563eb;color:#fff}
-.result{margin-top:15px;background:#1e293b;padding:15px;border-radius:15px;white-space:pre-line}
+body{margin:0;font-family:Arial;background:#020617;color:#fff}
+.container{max-width:900px;margin:auto;padding:20px}
+.card{background:#0f172a;padding:20px;border-radius:15px;margin-bottom:20px}
+input,select,textarea{width:100%;padding:12px;margin-top:10px;border-radius:10px;border:none;background:#1e293b;color:#fff}
+button{width:100%;padding:12px;margin-top:10px;border-radius:10px;border:none;background:#fff;color:#000;font-weight:bold}
+.result{margin-top:15px;background:#1e293b;padding:15px;border-radius:10px;white-space:pre-line}
 </style>
 </head>
 
 <body>
 <div class="container">
 
-<div class="hero">
-<div class="badge">100% FREE</div>
-<h1>🚀 Sazio AI</h1>
-<p>Create viral content, hooks, scripts, SEO instantly</p>
-</div>
-
-<div class="grid">
-
 <div class="card">
-<h2>Generate Content</h2>
+<h2>🚀 Sazio AI</h2>
 
-<input id="idea" placeholder="Enter idea">
+<input id="idea" placeholder="Enter your idea">
+
 <select id="type">
 <option value="video">Video</option>
 <option value="story">Story</option>
+<option value="ad">Ad</option>
+<option value="movie">Movie</option>
+<option value="webseries">Web Series</option>
 </select>
 
-<textarea id="goal" placeholder="script, hook, SEO"></textarea>
+<textarea id="goal" placeholder="script, hook, SEO, analysis"></textarea>
 
-<button class="primary" onclick="generate()">Generate</button>
-<button class="voice" onclick="startVoice()">Voice</button>
+<button onclick="generate()">Generate</button>
 
-<div id="output" class="result">Result here...</div>
+<div id="output" class="result">Result will appear here...</div>
 </div>
 
 <div class="card">
-<h2>Live Example</h2>
-<div id="liveExample">
-Idea: -<br>
-Type: -<br>
-Output: -
-</div>
+<h3>Live Example</h3>
+<div id="liveExample">-</div>
 </div>
 
-</div>
 </div>
 
 <script>
-function updateLiveExample(){
-const idea=document.getElementById("idea").value||"-";
-const type=document.getElementById("type").value||"-";
-const goal=document.getElementById("goal").value||"-";
-
-document.getElementById("liveExample").innerHTML=
-`Idea: ${idea}<br>Type: ${type}<br>Output: ${goal}`;
+function updateLive(){
+const i=document.getElementById("idea").value||"-";
+const t=document.getElementById("type").value||"-";
+const g=document.getElementById("goal").value||"-";
+document.getElementById("liveExample").innerText=`Idea: ${i}\nType: ${t}\nOutput: ${g}`;
 }
 
-document.getElementById("idea").addEventListener("input",updateLiveExample);
-document.getElementById("goal").addEventListener("input",updateLiveExample);
-document.getElementById("type").addEventListener("change",updateLiveExample);
+document.getElementById("idea").addEventListener("input",updateLive);
+document.getElementById("goal").addEventListener("input",updateLive);
+document.getElementById("type").addEventListener("change",updateLive);
 
 async function generate(){
 const idea=document.getElementById("idea").value;
 const type=document.getElementById("type").value;
 const goal=document.getElementById("goal").value;
 
-const res=await fetch("/api/generate",{method:"POST",headers:{"Content-Type":"application/json"},
-body:JSON.stringify({idea,type,output:goal})});
+const res=await fetch("/api/generate",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({idea,type,output:goal})
+});
 
 const data=await res.json();
 document.getElementById("output").innerText=data.result;
-}
-
-function startVoice(){
-alert("Voice working later");
 }
 </script>
 
