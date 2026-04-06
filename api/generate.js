@@ -347,6 +347,7 @@ IMPROVE: one short improvement
     );
 
     const data = await response.json();
+    console.log("FULL GEMINI RESPONSE:", JSON.stringify(data));
 
     if (response.status === 429) {
       return res.status(200).json({
