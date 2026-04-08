@@ -1,14 +1,21 @@
 export default async function handler(req, res) {
   if (req.method !== "POST") {
-    return res.status(405).json({ result: "Method not allowed" });
+    return res.status(200).json({ result: "Method not allowed" });
   }
 
   try {
-    if (!process.env.GEMINI_API_KEY) {
-      return res.status(500).json({ result: "API KEY NOT FOUND" });
+    let body = {};
+    try {
+      body = typeof req.body === "string" ? JSON.parse(req.body) : (req.body || {});
+    } catch {
+      body = {};
     }
 
-    const { idea, type, output } = req.body || {};
+    if (!process.env.GEMINI_API_KEY) {
+      return res.status(200).json({ result: "API KEY NOT FOUND" });
+    }
+
+    const { idea, type, output } = body;
     const safeIdea = typeof idea === "string" ? idea.trim() : "";
     const safeType = typeof type === "string" && type.trim() ? type.trim() : "video";
     const safeOutput =
@@ -17,7 +24,7 @@ export default async function handler(req, res) {
         : "script, hook, SEO, analysis, translation, compare, earning idea";
 
     if (!safeIdea) {
-      return res.status(400).json({ result: "Idea required" });
+      return res.status(200).json({ result: "Idea required" });
     }
 
     function normalize(text) {
@@ -360,7 +367,7 @@ Return EXACT JSON:
         if (first !== -1 && last !== -1 && last > first) {
           try {
             return JSON.parse(cleaned.slice(first, last + 1));
-          } catch (innerError) {
+          } catch {
             return null;
           }
         }
@@ -458,28 +465,34 @@ AI Brain:
     const fallback = fallbackData(topic, safeType, lang);
     const prompt = buildPrompt(safeIdea, safeType, safeOutput, lang, topic);
 
-    const response = await fetch(
-      "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-goog-api-key": process.env.GEMINI_API_KEY
-        },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }],
-          generationConfig: {
-            temperature: 0.45,
-            maxOutputTokens: 1400,
-            responseMimeType: "application/json"
-          }
-        })
+    let data = null;
+    try {
+      const response = await fetch(
+        "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-goog-api-key": process.env.GEMINI_API_KEY
+          },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: prompt }] }],
+            generationConfig: {
+              temperature: 0.45,
+              maxOutputTokens: 1400
+            }
+          })
+        }
+      );
+
+      data = await response.json();
+
+      if (!response.ok) {
+        return res.status(200).json({
+          result: formatOutput(fallback)
+        });
       }
-    );
-
-    const data = await response.json();
-
-    if (!response.ok) {
+    } catch {
       return res.status(200).json({
         result: formatOutput(fallback)
       });
@@ -489,7 +502,7 @@ AI Brain:
     try {
       const parts = data?.candidates?.[0]?.content?.parts || [];
       rawText = parts.map((part) => part.text || "").join("\n").trim();
-    } catch (error) {
+    } catch {
       rawText = "";
     }
 
@@ -533,7 +546,7 @@ AI Brain:
       result: formatOutput(finalData)
     });
   } catch (error) {
-    return res.status(500).json({
+    return res.status(200).json({
       result: "SERVER ERROR: " + error.message
     });
   }
