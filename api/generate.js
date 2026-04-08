@@ -94,8 +94,6 @@ export default async function handler(req, res) {
     }
 
     function buildPrompt(userIdea, mode, userNeed, lang, topic) {
-      const isHindi = lang === "hi-dev" || lang === "hi-roman";
-
       return `
 ${buildLanguageInstruction(lang)}
 
@@ -121,26 +119,14 @@ STRICT RULES:
 - For earning, comparison, affiliate, freelance, and stock topics keep output legal, safe, grounded, and non-misleading
 - After Analysis, also add:
   - translation (2 short lines)
-  - compare (3 short bullet-style lines)
-  - earning (3 short legal-safe bullet-style lines)
-  - brain (3 short bullet-style lines)
+  - compare (3 short lines)
+  - earning (3 short legal-safe lines)
+  - brain (3 short lines)
 
 User idea: ${userIdea}
 Main topic: ${topic}
 Mode: ${mode}
 Need: ${userNeed}
-
-${isHindi ? `
-Use this style idea:
-- story line 1 = scene opening
-- story line 2 = struggle / escalation
-- story line 3 = twist / payoff
-` : `
-Use this style idea:
-- story line 1 = scene opening
-- story line 2 = struggle / escalation
-- story line 3 = twist / payoff
-`}
 
 Return EXACT JSON:
 {
@@ -310,7 +296,7 @@ Return EXACT JSON:
             `يمكن توسيع ${t} إلى فكرة فيلم.`,
             `يمكن تقسيم ${t} إلى حلقات لسلسلة ويب.`,
             `يمكن تكييف ${t} للإعلانات أو المحتوى الاجتماعي.`
-          }
+          ]
         };
       }
 
