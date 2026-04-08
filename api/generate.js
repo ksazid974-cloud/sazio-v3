@@ -53,25 +53,20 @@ export default async function handler(req, res) {
         .trim();
     }
 
-    function smartHindiTopic(topic, lang) {
+    function removeLeadingEk(topic, lang) {
       let t = normalize(topic);
-
       if (lang === "hi-dev" || lang === "hi-roman") {
-        t = t
-          .replace(/\bek\b/gi, "")
-          .replace(/\s+/g, " ")
-          .trim();
+        t = t.replace(/^ek\s+/i, "").trim();
       }
-
       return t || "idea";
     }
 
     function buildLanguageInstruction(lang) {
       if (lang === "hi-dev") {
-        return "Reply mainly in Hindi using Devanagari script. Avoid unnecessary English.";
+        return "Reply mainly in Hindi using Devanagari script. Avoid unnecessary English words where possible.";
       }
       if (lang === "hi-roman") {
-        return "Reply only in natural Roman Hindi / Hinglish. Avoid full English.";
+        return "Reply only in natural Roman Hindi / Hinglish. Avoid full English response.";
       }
       if (lang === "ar") {
         return "Reply only in Arabic.";
@@ -99,10 +94,12 @@ export default async function handler(req, res) {
     }
 
     function buildPrompt(userIdea, mode, userNeed, lang, topic) {
+      const isHindi = lang === "hi-dev" || lang === "hi-roman";
+
       return `
 ${buildLanguageInstruction(lang)}
 
-You are Sazio AI.
+You are Sazio AI Pro.
 
 ${buildModeInstruction(mode)}
 
@@ -113,22 +110,37 @@ STRICT RULES:
 - No intro
 - No explanation outside JSON
 - No fake promises
-- No generic filler
-- Keep output short, clean, useful, and structured
 - titles must be exactly 3
 - script must be exactly 3 complete lines
 - seo.keywords must be exactly 3
 - seo.hashtags must be exactly 3
 - analysis must stay honest
-- Titles must NOT repeat the full user input line
-- Use the main cleaned topic naturally
-- If user asks for story, make the 3 script lines feel like actual story progression, not generic placeholders
-- Keep earning, comparison, affiliate, freelance, and stock-related output legal, safe, and non-misleading
+- Titles must NOT repeat the full raw user input
+- Use the cleaned topic naturally
+- Make the script feel like an actual progressing story, not generic placeholders
+- For earning, comparison, affiliate, freelance, and stock topics keep output legal, safe, grounded, and non-misleading
+- After Analysis, also add:
+  - translation (2 short lines)
+  - compare (3 short bullet-style lines)
+  - earning (3 short legal-safe bullet-style lines)
+  - brain (3 short bullet-style lines)
 
 User idea: ${userIdea}
 Main topic: ${topic}
 Mode: ${mode}
 Need: ${userNeed}
+
+${isHindi ? `
+Use this style idea:
+- story line 1 = scene opening
+- story line 2 = struggle / escalation
+- story line 3 = twist / payoff
+` : `
+Use this style idea:
+- story line 1 = scene opening
+- story line 2 = struggle / escalation
+- story line 3 = twist / payoff
+`}
 
 Return EXACT JSON:
 {
@@ -146,7 +158,14 @@ Return EXACT JSON:
     "weakness": "...",
     "missing": "...",
     "improve": "..."
-  }
+  },
+  "translation": {
+    "line1": "...",
+    "line2": "..."
+  },
+  "compare": ["...", "...", "..."],
+  "earning": ["...", "...", "..."],
+  "brain": ["...", "...", "..."]
 }
 `;
     }
@@ -163,9 +182,9 @@ Return EXACT JSON:
           ],
           hook: `एक ऐसी शुरुआत जो viewers को पहले ही पल रोक सकती है।`,
           script: [
-            `${t} की कहानी की शुरुआत एक ऐसे दृश्य से होती है जहाँ मुश्किलें साफ दिखाई देती हैं।`,
-            `बीच में संघर्ष, भावना और दबाव बढ़ता है, जिससे कहानी और गहरी बनती है।`,
-            `अंत में एक ऐसा मोड़ आता है जो इस कहानी को यादगार बना सकता है।`
+            `${t} की कहानी सुबह के एक ऐसे दृश्य से शुरू होती है जहाँ मुश्किल साफ दिखाई देती है।`,
+            `बीच में हालत और खराब होती है, लोग साथ नहीं देते, लेकिन मुख्य किरदार हार नहीं मानता।`,
+            `अंत में उसका एक फैसला कहानी को बदल देता है और वही संघर्ष उसकी ताकत बन जाता है।`
           ],
           seo: {
             keywords: [t, `${t} कहानी`, `${mode} content`],
@@ -173,11 +192,30 @@ Return EXACT JSON:
             caption: `${t} पर based एक ऐसा idea जो सही presentation के साथ strong perform kar sakta hai।`
           },
           analysis: {
-            score: "76%",
-            strength: "Idea relatable aur engaging hai.",
-            weakness: "Hook aur specific ho sakta hai.",
-            missing: "Opening visual aur stronger ho sakta hai.",
-            improve: "Pehle 2 second me shock, contrast ya curiosity jodo."
+            score: "78%",
+            strength: "Emotion aur relatability strong hai.",
+            weakness: "Twist aur sharper ho sakta hai.",
+            missing: "Opening shock aur stronger ho sakta hai.",
+            improve: "Pehle 2 second me visual danger ya strong contrast jodo."
+          },
+          translation: {
+            line1: `${t} की कहानी का साफ version`,
+            line2: `A simple translation-ready line about ${t}`
+          },
+          compare: [
+            `${t} idea emotional content ke liye strong hai.`,
+            `${t} idea story mode me ad mode se better perform kar sakta hai.`,
+            `${t} idea me stronger twist add karke aur improve kiya ja sakta hai.`
+          ],
+          earning: [
+            `${t} idea ko YouTube Shorts ke liye use kiya ja sakta hai.`,
+            `${t} idea par reel, script ya freelance content service ban sakti hai.`,
+            `${t} idea ko legal safe creator package me convert kiya ja sakta hai.`
+          ],
+          brain: [
+            `${t} ko movie angle me expand kiya ja sakta hai.`,
+            `${t} ko web series episode breakdown me convert kiya ja sakta hai.`,
+            `${t} ko ad, story, ya social content format me adapt kiya ja sakta hai.`
           }
         };
       }
@@ -191,9 +229,9 @@ Return EXACT JSON:
           ],
           hook: `Ek aisi shuruaat jo viewer ko pehle hi pal rok sakti hai.`,
           script: [
-            `${t} ki kahani ki shuruaat ek aise scene se hoti hai jahan mushkilein saaf dikh rahi hoti hain.`,
-            `Beech me struggle, emotion aur pressure badhta hai, jis se story aur gehri lagti hai.`,
-            `End me ek aisa mod aata hai jo is kahani ko yaadgar bana sakta hai.`
+            `${t} ki kahani subah ke ek aise scene se shuru hoti hai jahan mushkil saaf dikh rahi hoti hai.`,
+            `Beech me halat aur kharab hote hain, log saath nahi dete, lekin main character haar nahi maanta.`,
+            `End me uska ek faisla sab badal deta hai aur wahi struggle uski sabse badi taqat ban jata hai.`
           ],
           seo: {
             keywords: [t, `${t} story`, `${mode} content`],
@@ -201,11 +239,30 @@ Return EXACT JSON:
             caption: `${t} par based ek aisa idea jo sahi presentation ke saath strong perform kar sakta hai.`
           },
           analysis: {
-            score: "76%",
-            strength: "Idea relatable aur engaging hai.",
-            weakness: "Hook aur specific ho sakta hai.",
-            missing: "Opening visual aur stronger ho sakta hai.",
-            improve: "Pehle 2 second me shock, contrast ya curiosity jodo."
+            score: "78%",
+            strength: "Emotion aur relatability strong hai.",
+            weakness: "Twist aur sharper ho sakta hai.",
+            missing: "Opening shock aur stronger ho sakta hai.",
+            improve: "Pehle 2 second me visual danger ya strong contrast jodo."
+          },
+          translation: {
+            line1: `${t} ki story ka simple version`,
+            line2: `A simple translation-ready line about ${t}`
+          },
+          compare: [
+            `${t} idea emotional content ke liye strong hai.`,
+            `${t} idea story mode me ad mode se better perform kar sakta hai.`,
+            `${t} idea me stronger twist add karke aur improve kiya ja sakta hai.`
+          ],
+          earning: [
+            `${t} idea ko YouTube Shorts ke liye use kiya ja sakta hai.`,
+            `${t} idea par reel, script ya freelance content service ban sakti hai.`,
+            `${t} idea ko legal safe creator package me convert kiya ja sakta hai.`
+          ],
+          brain: [
+            `${t} ko movie angle me expand kiya ja sakta hai.`,
+            `${t} ko web series episode breakdown me convert kiya ja sakta hai.`,
+            `${t} ko ad, story, ya social content format me adapt kiya ja sakta hai.`
           }
         };
       }
@@ -220,8 +277,8 @@ Return EXACT JSON:
           hook: `بداية قوية يمكنها إيقاف المشاهد من أول لحظة.`,
           script: [
             `تبدأ القصة بمشهد يوضح الصعوبة أو التوتر منذ البداية.`,
-            `في المنتصف يزداد الصراع والتأثير العاطفي بشكل واضح.`,
-            `في النهاية يظهر تحول يجعل القصة أكثر تذكرًا وتأثيرًا.`
+            `في المنتصف يزداد الضغط والصراع ولا يحصل البطل على الدعم بسهولة.`,
+            `في النهاية يؤدي قرار واحد إلى تغيير كبير يجعل القصة أكثر تأثيرًا.`
           ],
           seo: {
             keywords: [t, `${t} story`, `${mode} content`],
@@ -229,11 +286,30 @@ Return EXACT JSON:
             caption: `فكرة عن ${t} يمكن أن تؤدي بشكل أفضل مع عرض قوي.`
           },
           analysis: {
-            score: "76%",
-            strength: "الفكرة جذابة وقريبة من الجمهور.",
-            weakness: "الخطاف يحتاج تحديدًا أكثر.",
-            missing: "افتتاحية أقوى بصريًا.",
+            score: "78%",
+            strength: "الفكرة عاطفية وقريبة من الجمهور.",
+            weakness: "يمكن أن يكون التحول أقوى.",
+            missing: "افتتاحية أكثر صدمة.",
             improve: "ابدأ بلقطة أقوى أو عنصر فضول أكبر."
+          },
+          translation: {
+            line1: `نسخة مبسطة من فكرة ${t}`,
+            line2: `A simple translation-ready line about ${t}`
+          },
+          compare: [
+            `فكرة ${t} مناسبة للمحتوى العاطفي.`,
+            `وضع القصة قد يكون أفضل من وضع الإعلان لهذه الفكرة.`,
+            `يمكن تحسين الفكرة بإضافة تحول أقوى.`
+          ],
+          earning: [
+            `يمكن استخدام فكرة ${t} في محتوى قصير قانوني وآمن.`,
+            `يمكن تحويل الفكرة إلى خدمة كتابة أو محتوى مستقل.`,
+            `يمكن تقديمها ضمن باقة منشئ محتوى آمنة وقانونية.`
+          ],
+          brain: [
+            `يمكن توسيع ${t} إلى فكرة فيلم.`,
+            `يمكن تقسيم ${t} إلى حلقات لسلسلة ويب.`,
+            `يمكن تكييف ${t} للإعلانات أو المحتوى الاجتماعي.`
           }
         };
       }
@@ -247,8 +323,8 @@ Return EXACT JSON:
         hook: `A strong opening that can stop viewers in the first moment.`,
         script: [
           `The story opens with a scene that immediately shows tension or difficulty.`,
-          `The middle builds conflict, feeling, and stronger audience connection.`,
-          `The ending lands with a turn that makes the content more memorable.`
+          `The middle builds pressure, emotional conflict, and rising stakes around the main character.`,
+          `The ending turns on one decision that changes the direction of the story and leaves impact.`
         ],
         seo: {
           keywords: [t, `${t} story`, `${mode} content`],
@@ -256,12 +332,31 @@ Return EXACT JSON:
           caption: `A ${t}-based idea that can perform better with stronger presentation.`
         },
         analysis: {
-          score: "76%",
-          strength: "The idea is relatable and engaging.",
-          weakness: "The hook can be more specific.",
+          score: "78%",
+          strength: "The idea is emotional and relatable.",
+          weakness: "The twist can be sharper.",
           missing: "A stronger opening visual is missing.",
           improve: "Add more shock, contrast, or curiosity in the first 2 seconds."
-        }
+        },
+        translation: {
+          line1: `A simple version of the ${t} idea`,
+          line2: `A translation-ready line about ${t}`
+        },
+        compare: [
+          `${t} works better for emotional content than flat informational content.`,
+          `${t} may perform better in story mode than ad mode.`,
+          `${t} can improve more with a stronger twist.`
+        ],
+        earning: [
+          `${t} can be used for YouTube Shorts style content.`,
+          `${t} can be packaged into script or freelance creator services.`,
+          `${t} can be turned into a legal safe content offer.`
+        ],
+        brain: [
+          `${t} can be expanded into a movie angle.`,
+          `${t} can be broken into web series episodes.`,
+          `${t} can be adapted for ad, story, or social content.`
+        ]
       };
     }
 
@@ -315,6 +410,13 @@ Return EXACT JSON:
           return `${topic} ${suffixes[index] || "ki kahani"}`;
         }
 
+        t = t
+          .replace(/\bki ki\b/gi, "ki")
+          .replace(/\bka ka\b/gi, "ka")
+          .replace(/\bke ke\b/gi, "ke")
+          .replace(/\s+/g, " ")
+          .trim();
+
         return t;
       });
     }
@@ -343,11 +445,30 @@ Viral Score: ${data.analysis.score}
 Strength: ${data.analysis.strength}
 Weakness: ${data.analysis.weakness}
 Missing: ${data.analysis.missing}
-Improve: ${data.analysis.improve}`;
+Improve: ${data.analysis.improve}
+
+Translation:
+- ${data.translation.line1}
+- ${data.translation.line2}
+
+Compare:
+- ${data.compare[0]}
+- ${data.compare[1]}
+- ${data.compare[2]}
+
+Earning:
+- ${data.earning[0]}
+- ${data.earning[1]}
+- ${data.earning[2]}
+
+AI Brain:
+- ${data.brain[0]}
+- ${data.brain[1]}
+- ${data.brain[2]}`;
     }
 
     const lang = detectLanguage(safeIdea);
-    const topic = smartHindiTopic(cleanupTopic(safeIdea), lang);
+    const topic = removeLeadingEk(cleanupTopic(safeIdea), lang);
     const fallback = fallbackData(topic, safeType, lang);
     const prompt = buildPrompt(safeIdea, safeType, safeOutput, lang, topic);
 
@@ -362,8 +483,8 @@ Improve: ${data.analysis.improve}`;
         body: JSON.stringify({
           contents: [{ parts: [{ text: prompt }] }],
           generationConfig: {
-            temperature: 0.4,
-            maxOutputTokens: 1200,
+            temperature: 0.45,
+            maxOutputTokens: 1400,
             responseMimeType: "application/json"
           }
         })
@@ -412,7 +533,14 @@ Improve: ${data.analysis.improve}`;
         weakness: ensureString(parsed?.analysis?.weakness, fallback.analysis.weakness),
         missing: ensureString(parsed?.analysis?.missing, fallback.analysis.missing),
         improve: ensureString(parsed?.analysis?.improve, fallback.analysis.improve)
-      }
+      },
+      translation: {
+        line1: ensureString(parsed?.translation?.line1, fallback.translation.line1),
+        line2: ensureString(parsed?.translation?.line2, fallback.translation.line2)
+      },
+      compare: ensureArray(parsed?.compare, 3, fallback.compare),
+      earning: ensureArray(parsed?.earning, 3, fallback.earning),
+      brain: ensureArray(parsed?.brain, 3, fallback.brain)
     };
 
     return res.status(200).json({
