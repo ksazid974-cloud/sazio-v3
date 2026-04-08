@@ -1,6 +1,6 @@
 export default async function handler(req, res) {
   if (req.method !== "POST") {
-    return res.status(405).json({ result: "Only POST allowed" });
+    return res.status(405).json({ result: "Method not allowed" });
   }
 
   try {
@@ -10,12 +10,11 @@ export default async function handler(req, res) {
 
     const { idea, type, output } = req.body || {};
     const safeIdea = typeof idea === "string" ? idea.trim() : "";
-    const safeType =
-      typeof type === "string" && type.trim() ? type.trim() : "video";
+    const safeType = typeof type === "string" && type.trim() ? type.trim() : "video";
     const safeOutput =
       typeof output === "string" && output.trim()
         ? output.trim()
-        : "script, hook, SEO, analysis, translation, compare, earning";
+        : "script, hook, SEO, analysis, translation, compare, earning idea";
 
     if (!safeIdea) {
       return res.status(400).json({ result: "Idea required" });
@@ -49,8 +48,22 @@ export default async function handler(req, res) {
       return normalize(text)
         .replace(/\b(please|plz|script|hook|seo|analysis|caption|full pack|full package)\b/gi, " ")
         .replace(/\b(bnao|banao|do|de|likho|generate)\b/gi, " ")
+        .replace(/\b(video|story|ad|serial|movie|web series|webseries)\b/gi, " ")
         .replace(/\s+/g, " ")
         .trim();
+    }
+
+    function smartHindiTopic(topic, lang) {
+      let t = normalize(topic);
+
+      if (lang === "hi-dev" || lang === "hi-roman") {
+        t = t
+          .replace(/\bek\b/gi, "")
+          .replace(/\s+/g, " ")
+          .trim();
+      }
+
+      return t || "idea";
     }
 
     function buildLanguageInstruction(lang) {
@@ -94,18 +107,23 @@ You are Sazio AI.
 ${buildModeInstruction(mode)}
 
 STRICT RULES:
-- No intro
-- No "Here is"
+- Return ONLY valid JSON
 - No markdown
 - No code fences
-- No repeating the raw user input as title
-- Titles must feel natural
-- Hook must be strong
-- Script must be exactly 3 complete lines
-- SEO must include exactly 3 keywords and 3 hashtags
-- Analysis must stay honest
+- No intro
+- No explanation outside JSON
+- No fake promises
+- No generic filler
+- Keep output short, clean, useful, and structured
+- titles must be exactly 3
+- script must be exactly 3 complete lines
+- seo.keywords must be exactly 3
+- seo.hashtags must be exactly 3
+- analysis must stay honest
+- Titles must NOT repeat the full user input line
+- Use the main cleaned topic naturally
+- If user asks for story, make the 3 script lines feel like actual story progression, not generic placeholders
 - Keep earning, comparison, affiliate, freelance, and stock-related output legal, safe, and non-misleading
-- Return ONLY valid JSON
 
 User idea: ${userIdea}
 Main topic: ${topic}
@@ -145,14 +163,14 @@ Return EXACT JSON:
           ],
           hook: `एक ऐसी शुरुआत जो viewers को पहले ही पल रोक सकती है।`,
           script: [
-            `शुरुआत में एक strong emotional या curiosity moment आता है।`,
-            `बीच में संघर्ष, भावना और impact कहानी को और मजबूत बनाते हैं।`,
-            `अंत में एक ऐसा मोड़ आता है जो content को यादगार बना सकता है।`
+            `${t} की कहानी की शुरुआत एक ऐसे दृश्य से होती है जहाँ मुश्किलें साफ दिखाई देती हैं।`,
+            `बीच में संघर्ष, भावना और दबाव बढ़ता है, जिससे कहानी और गहरी बनती है।`,
+            `अंत में एक ऐसा मोड़ आता है जो इस कहानी को यादगार बना सकता है।`
           ],
           seo: {
-            keywords: [t, `${t} story`, `${mode} content`],
+            keywords: [t, `${t} कहानी`, `${mode} content`],
             hashtags: ["#viral", "#story", "#content"],
-            caption: `${t} पर based एक ऐसा idea जो सही presentation के साथ strong perform कर सकता है।`
+            caption: `${t} पर based एक ऐसा idea जो सही presentation के साथ strong perform kar sakta hai।`
           },
           analysis: {
             score: "76%",
@@ -173,9 +191,9 @@ Return EXACT JSON:
           ],
           hook: `Ek aisi shuruaat jo viewer ko pehle hi pal rok sakti hai.`,
           script: [
-            `Shuruaat me ek strong emotional ya curiosity moment aata hai.`,
-            `Beech me struggle, emotion aur impact content ko aur strong banate hain.`,
-            `End me ek aisa mod aata hai jo story ko yaadgar bana sakta hai.`
+            `${t} ki kahani ki shuruaat ek aise scene se hoti hai jahan mushkilein saaf dikh rahi hoti hain.`,
+            `Beech me struggle, emotion aur pressure badhta hai, jis se story aur gehri lagti hai.`,
+            `End me ek aisa mod aata hai jo is kahani ko yaadgar bana sakta hai.`
           ],
           seo: {
             keywords: [t, `${t} story`, `${mode} content`],
@@ -201,9 +219,9 @@ Return EXACT JSON:
           ],
           hook: `بداية قوية يمكنها إيقاف المشاهد من أول لحظة.`,
           script: [
-            `تبدأ الفكرة بلحظة قوية أو مثيرة للفضول.`,
-            `في المنتصف يظهر الصراع أو التأثير العاطفي بوضوح.`,
-            `في النهاية يوجد تحول يجعل المحتوى أكثر تذكرًا.`
+            `تبدأ القصة بمشهد يوضح الصعوبة أو التوتر منذ البداية.`,
+            `في المنتصف يزداد الصراع والتأثير العاطفي بشكل واضح.`,
+            `في النهاية يظهر تحول يجعل القصة أكثر تذكرًا وتأثيرًا.`
           ],
           seo: {
             keywords: [t, `${t} story`, `${mode} content`],
@@ -228,8 +246,8 @@ Return EXACT JSON:
         ],
         hook: `A strong opening that can stop viewers in the first moment.`,
         script: [
-          `The opening starts with a strong emotional or curiosity-driven beat.`,
-          `The middle builds conflict, feeling, and audience connection.`,
+          `The story opens with a scene that immediately shows tension or difficulty.`,
+          `The middle builds conflict, feeling, and stronger audience connection.`,
           `The ending lands with a turn that makes the content more memorable.`
         ],
         seo: {
@@ -284,6 +302,23 @@ Return EXACT JSON:
       return v || fallback;
     }
 
+    function cleanupTitles(titles, topic) {
+      return titles.map((title, index) => {
+        let t = normalize(title);
+        if (!t) return title;
+
+        const rawLower = t.toLowerCase();
+        const topicLower = String(topic || "").toLowerCase();
+
+        if (topicLower && rawLower === topicLower) {
+          const suffixes = ["ki ankahi kahani", "ka sangharsh", "ka sach"];
+          return `${topic} ${suffixes[index] || "ki kahani"}`;
+        }
+
+        return t;
+      });
+    }
+
     function formatOutput(data) {
       return `Title:
 - ${data.titles[0]}
@@ -312,7 +347,7 @@ Improve: ${data.analysis.improve}`;
     }
 
     const lang = detectLanguage(safeIdea);
-    const topic = cleanupTopic(safeIdea) || "idea";
+    const topic = smartHindiTopic(cleanupTopic(safeIdea), lang);
     const fallback = fallbackData(topic, safeType, lang);
     const prompt = buildPrompt(safeIdea, safeType, safeOutput, lang, topic);
 
@@ -327,8 +362,8 @@ Improve: ${data.analysis.improve}`;
         body: JSON.stringify({
           contents: [{ parts: [{ text: prompt }] }],
           generationConfig: {
-            temperature: 0.35,
-            maxOutputTokens: 1000,
+            temperature: 0.4,
+            maxOutputTokens: 1200,
             responseMimeType: "application/json"
           }
         })
@@ -360,7 +395,10 @@ Improve: ${data.analysis.improve}`;
     }
 
     const finalData = {
-      titles: ensureArray(parsed.titles, 3, fallback.titles),
+      titles: cleanupTitles(
+        ensureArray(parsed.titles, 3, fallback.titles),
+        topic
+      ),
       hook: ensureString(parsed.hook, fallback.hook),
       script: ensureArray(parsed.script, 3, fallback.script),
       seo: {
