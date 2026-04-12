@@ -209,7 +209,7 @@ Return EXACT JSON:
             `${t} ko movie angle me expand kiya ja sakta hai.`,
             `${t} ko web series episode breakdown me convert kiya ja sakta hai.`,
             `${t} ko ad, story, ya social content format me adapt kiya ja sakta hai.`
-          }
+          ]
         };
       }
 
@@ -256,7 +256,7 @@ Return EXACT JSON:
             `${t} ko movie angle me expand kiya ja sakta hai.`,
             `${t} ko web series episode breakdown me convert kiya ja sakta hai.`,
             `${t} ko ad, story, ya social content format me adapt kiya ja sakta hai.`
-          }
+          ]
         };
       }
 
