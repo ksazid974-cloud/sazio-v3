@@ -128,7 +128,7 @@
       overflow-wrap: break-word;
     }
     .result {
-      min-height: 320px;
+      min-height: 340px;
     }
     .feature-grid {
       display: grid;
@@ -343,13 +343,20 @@
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            idea,
-            type,
+            idea: idea,
+            type: type,
             output: goal
           })
         });
 
-        const data = await res.json();
+        const raw = await res.text();
+
+        let data = null;
+        try {
+          data = JSON.parse(raw);
+        } catch {
+          data = { result: raw || "❌ Invalid server response" };
+        }
 
         if (!data || !data.result) {
           outputEl.innerText = "❌ No AI response";
@@ -362,7 +369,7 @@
         statusEl.innerText = "✅ Done";
         saveMemory();
       } catch (error) {
-        outputEl.innerText = "❌ Error";
+        outputEl.innerText = "❌ Error: " + error.message;
         statusEl.innerText = "Error";
       }
 
@@ -373,7 +380,7 @@
       try {
         await navigator.clipboard.writeText(outputEl.innerText);
         statusEl.innerText = "Copied";
-      } catch (error) {
+      } catch {
         statusEl.innerText = "Copy failed";
       }
     }
