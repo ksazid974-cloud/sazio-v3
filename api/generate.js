@@ -1,36 +1,40 @@
-async function generate() {
-  const topic = document.getElementById("topic").value;
-  const mode = document.getElementById("mode").value;
-
-  const resultBox = document.getElementById("result");
-  resultBox.innerText = "Loading...";
-
+export default function handler(req, res) {
   try {
-    const response = await fetch("/api/generate", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        topic: topic,
-        mode: mode
-      })
+    if (req.method !== "POST") {
+      return res.status(200).json({
+        success: false,
+        error: "Only POST allowed"
+      });
+    }
+
+    const { topic, mode } = req.body || {};
+
+    if (!topic) {
+      return res.status(200).json({
+        success: false,
+        error: "No topic"
+      });
+    }
+
+    let result = "";
+
+    if (mode === "video") {
+      result = "Video content for: " + topic;
+    } else if (mode === "seo") {
+      result = "SEO content for: " + topic;
+    } else {
+      result = "Story for: " + topic;
+    }
+
+    return res.status(200).json({
+      success: true,
+      result: result
     });
 
-    if (!response.ok) {
-      throw new Error("API failed");
-    }
-
-    const data = await response.json();
-
-    if (data.success) {
-      resultBox.innerText = data.result;
-    } else {
-      resultBox.innerText = "❌ " + data.error;
-    }
-
-  } catch (error) {
-    resultBox.innerText = "❌ No AI response";
-    console.error(error);
+  } catch (e) {
+    return res.status(200).json({
+      success: false,
+      error: "Server crashed"
+    });
   }
 }
