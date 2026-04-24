@@ -17,18 +17,19 @@ export default async function handler(req, res) {
     script += `🎯 Type: ${type}\n`;
     script += `💡 Idea: ${idea}\n\n`;
 
-    // Professional Long-Form Output
+    // Professional Output
     script += `🎬 PROFESSIONAL OUTPUT READY\n\n`;
     script += `1. Complete Story / Script (Hinglish)\n`;
     script += `2. Scene-by-Scene Breakdown + Editing Guide\n`;
     script += `3. Natural Voiceover Lines (AI khud bolega)\n`;
     script += `4. Advanced Editing Instructions (cuts, transitions, music, subtitles, b-roll)\n`;
+    script += `5. Image Generation Prompts (Thumbnail, Poster, Scene Images)\n\n`;
 
-    if (duration.includes("hr") || type === "movie" || type === "webseries" || type === "tv") {
-      script += `5. Full Long-Form Structure for Movie/Web Series ready\n`;
+    if (duration.includes("hr") || type === "movie" || type === "webseries") {
+      script += `6. Full Long-Form Structure ready for ${duration} content\n`;
     }
 
-    script += `\n🛒 Price Comparison + Affiliate Links ready\n`;
+    script += `🛒 Price Comparison + Affiliate Links ready\n`;
     script += `🏏 Cricket / Stock Market Insights ready\n`;
     script += `💼 Freelancing Gigs + Proposals ready\n`;
     script += `📱 Social Media Auto Upload Guide + Peak Time ready\n`;
