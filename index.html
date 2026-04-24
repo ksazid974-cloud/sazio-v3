@@ -17,6 +17,7 @@
     button { width:100%; padding:18px; margin:8px 0; border:none; border-radius:16px; font-size:19px; font-weight:bold; cursor:pointer; }
     .primary { background:linear-gradient(90deg,#ef4444,#f97316); color:#fff; }
     .voice { background:#2563eb; color:#fff; }
+    .clear { background:#334155; color:#fff; }
     .result { background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.1); border-radius:16px; padding:20px; min-height:420px; white-space:pre-line; line-height:1.7; overflow:auto; }
     .box { background:rgba(34,197,151,0.1); border:1px solid #22c55e; border-radius:16px; padding:16px; margin:12px 0; }
     .status { text-align:center; font-weight:bold; margin:12px 0; color:#22c55e; }
@@ -27,16 +28,17 @@
     <div class="card hero">
       <div class="badge">100% FREE • NO WATERMARK • PROFESSIONAL • LEGAL REVENUE</div>
       <h1>🚀 Sazio AI <span class="ultra">ULTRA v2.0</span></h1>
-      <p>15 Second se 3 Hour Movie tak • Full Revenue System</p>
+      <p>Reels • Shorts • Trailer • Ad • Teaser se 3 Hour Movie tak • Full Revenue System</p>
     </div>
 
     <div class="card">
       <h2>Idea Bolo + Duration Choose Karo</h2>
-      <input id="idea" placeholder="Ek raja ki emotional 2 hour movie banao" />
+      <input id="idea" placeholder="Apna idea yahan likho..." />
 
       <select id="duration">
         <option value="15s">15 Second Reel</option>
-        <option value="60s">1 Minute</option>
+        <option value="30s">30 Second Reel / Teaser</option>
+        <option value="60s">60 Second Shorts</option>
         <option value="5min">5 Minutes</option>
         <option value="15min">15 Minutes</option>
         <option value="30min">30 Minutes</option>
@@ -46,31 +48,39 @@
         <option value="series">Web Series Episode</option>
       </select>
 
+      <input id="customDuration" placeholder="Ya manually time likho (45 seconds, 2.5 hours, 90 minutes)" style="margin-top:8px;" />
+
       <select id="type">
         <option value="video">Cinematic Video</option>
+        <option value="shorts">YouTube Shorts / Instagram Reels</option>
+        <option value="trailer">Movie / Series Trailer</option>
+        <option value="ad">Advertisement / Promo Ad</option>
+        <option value="teaser">Teaser</option>
         <option value="movie">Full Movie</option>
-        <option value="webseries">Web Series</option>
-        <option value="tv">TV Serial</option>
+        <option value="webseries">Web Series Episode</option>
+        <option value="tv">TV Serial Episode</option>
       </select>
 
-      <textarea id="goal" placeholder="Extra details (optional)"></textarea>
+      <textarea id="goal" placeholder="Extra details ya style (optional)"></textarea>
 
       <button class="primary" id="generateBtn">🔥 ONE CLICK GENERATE FULL PROFESSIONAL OUTPUT</button>
       <button class="voice" id="voiceBtn">🎤 Voice Input</button>
+      <button class="clear" id="clearBtn">🗑️ Clear Output</button>
     </div>
 
-    <div class="status" id="status">Ready — Full Merged Professional System</div>
-    <div class="result" id="output">Your final professional output will appear here...</div>
+    <div class="status" id="status">Ready — Full Professional System</div>
+    <div class="result" id="output">Your professional output will appear here...</div>
 
     <div class="card">
-      <h2>Revenue + All Features</h2>
-      <div id="prices" class="box">Full analysis & earning plan yahan aayega...</div>
+      <h2>Revenue + Price Comparison + Image Prompts</h2>
+      <div id="prices" class="box">All analysis & earning plan yahan aayega...</div>
     </div>
   </div>
 
   <script>
     const ideaEl = document.getElementById("idea");
     const durationEl = document.getElementById("duration");
+    const customDurationEl = document.getElementById("customDuration");
     const typeEl = document.getElementById("type");
     const goalEl = document.getElementById("goal");
     const outputEl = document.getElementById("output");
@@ -78,6 +88,7 @@
     const pricesEl = document.getElementById("prices");
     const generateBtn = document.getElementById("generateBtn");
     const voiceBtn = document.getElementById("voiceBtn");
+    const clearBtn = document.getElementById("clearBtn");
 
     async function generate() {
       const idea = ideaEl.value.trim();
@@ -86,9 +97,11 @@
         return; 
       }
 
+      const finalDuration = customDurationEl.value.trim() || durationEl.value;
+
       generateBtn.disabled = true;
-      statusEl.innerText = "🚀 Generating Full Merged Professional System...";
-      outputEl.innerText = "⏳ Sab kuch (video, editing, revenue, affiliate, future prediction) process ho raha hai...";
+      statusEl.innerText = "🚀 Generating Full Professional Output...";
+      outputEl.innerText = "⏳ Sazio AI ULTRA v2.0 sab kuch process kar raha hai...";
 
       try {
         const res = await fetch("/api/generate", {
@@ -96,7 +109,7 @@
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ 
             idea, 
-            duration: durationEl.value, 
+            duration: finalDuration, 
             type: typeEl.value, 
             goal: goalEl.value 
           })
@@ -104,12 +117,18 @@
         const data = await res.json();
 
         outputEl.innerText = data.script || data.result;
-        pricesEl.innerHTML = data.revenue || "✅ Full System Ready";
+        pricesEl.innerHTML = data.revenue || "✅ Revenue + Price Comparison + Image Prompts Ready";
         statusEl.innerText = "✅ Full Professional Output Ready";
       } catch (e) {
         outputEl.innerText = "❌ Error: " + e.message;
       }
       generateBtn.disabled = false;
+    }
+
+    function clearOutput() {
+      outputEl.innerText = "Your professional output will appear here...";
+      pricesEl.innerHTML = "Revenue + Price Comparison + Image Prompts yahan aayega...";
+      statusEl.innerText = "Ready — Full Professional System";
     }
 
     let recognitionInstance = null;
@@ -126,6 +145,7 @@
 
     generateBtn.addEventListener("click", generate);
     voiceBtn.addEventListener("click", startVoice);
+    clearBtn.addEventListener("click", clearOutput);
   </script>
 </body>
 </html>
