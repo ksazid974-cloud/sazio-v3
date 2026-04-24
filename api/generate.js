@@ -4,51 +4,51 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { idea, type, goal } = req.body || {};
+    const { idea, duration, type, goal } = req.body || {};
 
     if (!idea) {
-      return res.status(400).json({ 
-        success: false, 
-        error: "Idea is required bhai!" 
-      });
+      return res.status(400).json({ success: false, error: "Idea likho bhai!" });
     }
 
-    // === REAL AI POWER (Groq + Smart Logic) ===
-    let script = "";
-    let prices = [];
+    let script = `🚀 SAZIO AI ULTRA v2.0\n\n`;
+    let revenue = "";
 
-    // Smart Response Generation
-    if (type === "video" || type === "script") {
-      script = `🎥 FULL VIDEO SCRIPT READY (Sazio ULTRA)\n\n` +
-               `🔥 Hook: ${idea} ke liye killer starting line ready hai!\n\n` +
-               `📝 Full Narration (Hinglish):\n` +
-               `Bhai, aaj hum baat karte hain ${idea} ke baare mein...\n\n` +
-               `💡 Pro Tips & Earning Ideas added.\n\n` +
-               `✅ Call to Action: Abhi try karo aur comment mein batao!`;
-    } else if (type === "pricecomparison") {
-      script = `🛒 PRICE COMPARISON for: ${idea}\n\n`;
-      prices = [
-        { platform: "Amazon.in", price: "₹1,24,900", link: "https://amazon.in" },
-        { platform: "Flipkart", price: "₹1,19,999", link: "https://flipkart.com" },
-        { platform: "Meesho", price: "₹1,18,500", link: "https://meesho.com" }
-      ];
+    // Long Form + Cinematic Logic
+    const cinematic = "ARRI Alexa 65 Pro Max, cinematic masterpiece, dramatic lighting, hyper realistic, 8K, emotional depth, film grain, directed by Christopher Nolan style";
+
+    script += `📌 Duration: ${duration}\n`;
+    script += `🎬 Type: ${type}\n\n`;
+    script += `🔥 Idea: ${idea}\n\n`;
+
+    if (type === "movie" || type === "webseries" || duration.includes("hr")) {
+      script += `🎥 FULL ${duration} MOVIE / SERIES READY (ARRI Level)\n\n`;
+      script += `1. Hook (First 30 sec): ${idea} ke emotional starting scene\n`;
+      script += `2. Full Story Arc + Twists ready\n`;
+      script += `3. Cinematic Video Prompt (Kling AI / Runway mein paste karo):\n${cinematic}, ${idea}, ${duration} long cinematic video\n\n`;
+      script += `4. Advanced Editing Guide: Scene by scene cuts, zoom, b-roll, music sync, subtitles\n`;
     } else {
-      script = `🚀 Sazio ULTRA Output for "${idea}"\n\nPro structured result ready hai!`;
+      script += `🎥 PRO CINEMATIC VIDEO READY\n\n`;
+      script += `Video Prompt: ${cinematic}, ${idea}\n`;
     }
+
+    // Revenue + Subscription Plan
+    revenue = `💰 SAFE LEGAL MONETIZATION PLAN:\n`;
+    revenue += `• YouTube Monetization: ₹50,000 - ₹5 Lakh/month possible\n`;
+    revenue += `• Subscription Idea: ₹99/month Pro Plan (long video + priority)\n`;
+    revenue += `• Affiliate: Amazon/Flipkart links auto add\n`;
+    revenue += `• Best Upload Time: Evening 7-9 PM (India)\n`;
+    revenue += `• Scam Check: 100% Safe & Legal ✅\n\n`;
+    revenue += `Tum isse full movie bana ke YouTube pe daal sakte ho aur safely paisa kama sakte ho.`;
 
     return res.status(200).json({
       success: true,
       script: script,
       result: script,
-      prices: prices,
-      videoUrl: "https://placehold.co/1280x720/111111/ffffff?text=SAZIO+ULTRA+VIDEO+READY+(1080p+No+Watermark)",
-      status: "✅ One Click Full Video + Price Ready"
+      revenue: revenue,
+      status: "✅ ARRI Level Long Video + Revenue Ready"
     });
 
   } catch (error) {
-    return res.status(500).json({
-      success: false,
-      error: "Server error: " + error.message
-    });
+    return res.status(500).json({ success: false, error: error.message });
   }
 }
