@@ -17,7 +17,7 @@
     button { width:100%; padding:18px; margin:8px 0; border:none; border-radius:16px; font-size:19px; font-weight:bold; cursor:pointer; }
     .primary { background:linear-gradient(90deg,#ef4444,#f97316); color:#fff; }
     .voice { background:#2563eb; color:#fff; }
-    .result { background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.1); border-radius:16px; padding:20px; min-height:360px; white-space:pre-line; line-height:1.7; overflow:auto; }
+    .result { background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.1); border-radius:16px; padding:20px; min-height:380px; white-space:pre-line; line-height:1.7; overflow:auto; }
     .box { background:rgba(34,197,151,0.1); border:1px solid #22c55e; border-radius:16px; padding:16px; margin:12px 0; }
     .status { text-align:center; font-weight:bold; margin:12px 0; color:#22c55e; }
   </style>
@@ -25,14 +25,14 @@
 <body>
   <div class="container">
     <div class="card hero">
-      <div class="badge">100% FREE • NO WATERMARK • ARRI ALEXA 65 • LEGAL REVENUE</div>
+      <div class="badge">100% FREE • NO WATERMARK • PROFESSIONAL • LEGAL REVENUE</div>
       <h1>🚀 Sazio AI <span class="ultra">ULTRA v2.0</span></h1>
-      <p>15 Sec Reel se 3 Hour Movie tak • Web Series • Subscription Ready</p>
+      <p>15 Second Reel se 3 Hour Movie tak • Web Series • Full Revenue System</p>
     </div>
 
     <div class="card">
       <h2>Idea Bolo + Duration Choose Karo</h2>
-      <input id="idea" placeholder="Ek garib kishan ki 2 hour emotional movie banao" />
+      <input id="idea" placeholder="Ek garib kishan ki emotional 2 hour movie banao" />
 
       <select id="duration">
         <option value="15s">15 Second Reel</option>
@@ -44,28 +44,27 @@
         <option value="2hr">2 Hour Full Movie</option>
         <option value="3hr">3 Hour Epic Movie</option>
         <option value="series">Web Series Episode</option>
-        <option value="fullseason">Full Season Plan</option>
       </select>
 
       <select id="type">
-        <option value="video">🎥 Cinematic Video (ARRI Level)</option>
-        <option value="movie">🎬 Full Movie</option>
-        <option value="webseries">📺 Web Series</option>
-        <option value="tv">📺 TV Serial</option>
+        <option value="video">Cinematic Video</option>
+        <option value="movie">Full Movie</option>
+        <option value="webseries">Web Series</option>
+        <option value="tv">TV Serial</option>
       </select>
 
       <textarea id="goal" placeholder="Extra details ya style (optional)"></textarea>
 
-      <button class="primary" id="generateBtn">🔥 ONE CLICK GENERATE FULL VIDEO + REVENUE PLAN</button>
-      <button class="voice" id="voiceBtn">🎤 Voice Input (Hinglish)</button>
+      <button class="primary" id="generateBtn">🔥 ONE CLICK GENERATE FULL PROFESSIONAL OUTPUT</button>
+      <button class="voice" id="voiceBtn">🎤 Voice Input</button>
     </div>
 
-    <div class="status" id="status">Ready — Long Form + Safe Subscription Mode ON</div>
-    <div class="result" id="output">Your cinematic long-form output will appear here...</div>
+    <div class="status" id="status">Ready — Professional Long Form + Revenue System</div>
+    <div class="result" id="output">Your professional output will appear here...</div>
 
     <div class="card">
       <h2>Revenue + Subscription + Peak Time</h2>
-      <div id="prices" class="box">Safe earning plan + best upload time yahan aayega...</div>
+      <div id="prices" class="box">Smart analysis & earning plan yahan aayega...</div>
     </div>
   </div>
 
@@ -82,11 +81,14 @@
 
     async function generate() {
       const idea = ideaEl.value.trim();
-      if (!idea) { outputEl.innerText = "⚠️ Idea likho pehle!"; return; }
+      if (!idea) { 
+        outputEl.innerText = "⚠️ Pehle idea likho!"; 
+        return; 
+      }
 
       generateBtn.disabled = true;
-      statusEl.innerText = "🚀 Generating " + durationEl.value + " " + typeEl.value + " + Full Revenue Plan...";
-      outputEl.innerText = "⏳ ARRI Alexa 65 Level + Monetization Ready ho raha hai...";
+      statusEl.innerText = "🚀 Generating Professional Output...";
+      outputEl.innerText = "⏳ Sazio AI ULTRA v2.0 full system process kar raha hai...";
 
       try {
         const res = await fetch("/api/generate", {
@@ -102,8 +104,8 @@
         const data = await res.json();
 
         outputEl.innerText = data.script || data.result;
-        pricesEl.innerHTML = data.revenue || "✅ Subscription + Affiliate Ready";
-        statusEl.innerText = "✅ Full Output Ready • Safe & Legal";
+        pricesEl.innerHTML = data.revenue || "✅ Professional Revenue Plan Ready";
+        statusEl.innerText = "✅ Full Professional Output Ready";
       } catch (e) {
         outputEl.innerText = "❌ Error: " + e.message;
       }
