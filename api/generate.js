@@ -11,37 +11,36 @@ export default async function handler(req, res) {
     }
 
     let script = `🚀 Sazio AI ULTRA v2.0 — FULL PROFESSIONAL SYSTEM\n\n`;
-    let revenue = `💰 FULL REVENUE & MONETIZATION PLAN\n\n`;
+    let revenue = `💰 FULL REVENUE & MONETIZATION SYSTEM\n\n`;
 
     script += `📌 Duration: ${duration}\n`;
     script += `🎯 Type: ${type}\n`;
     script += `💡 Idea: ${idea}\n\n`;
 
-    // Main Professional Output
+    // Professional Long-Form Output
     script += `🎬 PROFESSIONAL OUTPUT READY\n\n`;
     script += `1. Complete Story / Script (Hinglish)\n`;
     script += `2. Scene-by-Scene Breakdown + Editing Guide\n`;
     script += `3. Natural Voiceover Lines (AI khud bolega)\n`;
-    script += `4. Advanced Editing Instructions (cuts, transitions, music, subtitles)\n`;
+    script += `4. Advanced Editing Instructions (cuts, transitions, music, subtitles, b-roll)\n`;
 
-    if (duration.includes("hr") || type === "movie" || type === "webseries") {
-      script += `5. Full Long-Form Structure (2hr/3hr Movie/Web Series ready)\n`;
+    if (duration.includes("hr") || type === "movie" || type === "webseries" || type === "tv") {
+      script += `5. Full Long-Form Structure for Movie/Web Series ready\n`;
     }
 
-    // Extra Features
     script += `\n🛒 Price Comparison + Affiliate Links ready\n`;
     script += `🏏 Cricket / Stock Market Insights ready\n`;
     script += `💼 Freelancing Gigs + Proposals ready\n`;
     script += `📱 Social Media Auto Upload Guide + Peak Time ready\n`;
     script += `🔮 Future Trend Prediction (2026-2030) ready\n`;
 
-    // Revenue
-    revenue += `• YouTube / Instagram / TikTok Monetization\n`;
-    revenue += `• Pro Subscription (₹99 - ₹499/month)\n`;
-    revenue += `• Affiliate (Amazon, Flipkart, Meesho)\n`;
+    // Revenue Plan
+    revenue += `• YouTube, Instagram, TikTok Monetization\n`;
+    revenue += `• Pro Subscription Plan (₹99 - ₹499/month)\n`;
+    revenue += `• Affiliate Marketing (Amazon, Flipkart, Meesho)\n`;
     revenue += `• Freelancing + Digital Products\n`;
     revenue += `• Best Upload Time: Evening 7-9 PM (India)\n`;
-    revenue += `• Expected Monthly Earning: ₹50,000 - ₹5 Lakh+\n`;
+    revenue += `• Expected Monthly Earning: ₹50,000 - ₹5 Lakh+ (consistent content se)\n`;
     revenue += `✅ 100% Safe • Legal • No Scam • Real Value`;
 
     return res.status(200).json({
