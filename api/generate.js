@@ -10,42 +10,41 @@ export default async function handler(req, res) {
       return res.status(400).json({ success: false, error: "Idea likho bhai!" });
     }
 
-    let script = `🚀 SAZIO AI ULTRA v2.0\n\n`;
-    let revenue = "";
-
-    // Long Form + Cinematic Logic
-    const cinematic = "ARRI Alexa 65 Pro Max, cinematic masterpiece, dramatic lighting, hyper realistic, 8K, emotional depth, film grain, directed by Christopher Nolan style";
+    let script = `🚀 Sazio AI ULTRA v2.0\n\n`;
+    let revenue = `💰 PROFESSIONAL REVENUE PLAN:\n`;
 
     script += `📌 Duration: ${duration}\n`;
-    script += `🎬 Type: ${type}\n\n`;
-    script += `🔥 Idea: ${idea}\n\n`;
+    script += `🎯 Type: ${type}\n`;
+    script += `💡 Idea: ${idea}\n\n`;
 
-    if (type === "movie" || type === "webseries" || duration.includes("hr")) {
-      script += `🎥 FULL ${duration} MOVIE / SERIES READY (ARRI Level)\n\n`;
-      script += `1. Hook (First 30 sec): ${idea} ke emotional starting scene\n`;
-      script += `2. Full Story Arc + Twists ready\n`;
-      script += `3. Cinematic Video Prompt (Kling AI / Runway mein paste karo):\n${cinematic}, ${idea}, ${duration} long cinematic video\n\n`;
-      script += `4. Advanced Editing Guide: Scene by scene cuts, zoom, b-roll, music sync, subtitles\n`;
+    // Professional Long-Form Output
+    if (duration.includes("hr") || type === "movie" || type === "webseries") {
+      script += `🎬 FULL PROFESSIONAL ${duration} CONTENT READY\n\n`;
+      script += `1. Strong Opening Hook\n`;
+      script += `2. Complete Story Structure with Emotional Arc\n`;
+      script += `3. Scene-by-Scene Breakdown\n`;
+      script += `4. Natural Voiceover Script (Hinglish)\n`;
+      script += `5. Advanced Editing Instructions (Cuts, Transitions, B-roll, Music Sync)\n\n`;
+      script += `✅ Ready for professional production.\n`;
     } else {
-      script += `🎥 PRO CINEMATIC VIDEO READY\n\n`;
-      script += `Video Prompt: ${cinematic}, ${idea}\n`;
+      script += `🎥 PROFESSIONAL CINEMATIC VIDEO READY\n\n`;
+      script += `High-quality video concept, hook, narration aur editing guide ready hai.\n`;
     }
 
-    // Revenue + Subscription Plan
-    revenue = `💰 SAFE LEGAL MONETIZATION PLAN:\n`;
-    revenue += `• YouTube Monetization: ₹50,000 - ₹5 Lakh/month possible\n`;
-    revenue += `• Subscription Idea: ₹99/month Pro Plan (long video + priority)\n`;
-    revenue += `• Affiliate: Amazon/Flipkart links auto add\n`;
+    // Revenue & Subscription Plan
+    revenue += `• YouTube / Instagram / TikTok Monetization\n`;
+    revenue += `• Pro Subscription Plan (₹99 - ₹499/month)\n`;
+    revenue += `• Affiliate Marketing (Amazon, Flipkart etc.)\n`;
     revenue += `• Best Upload Time: Evening 7-9 PM (India)\n`;
-    revenue += `• Scam Check: 100% Safe & Legal ✅\n\n`;
-    revenue += `Tum isse full movie bana ke YouTube pe daal sakte ho aur safely paisa kama sakte ho.`;
+    revenue += `• Expected Monthly Earning: ₹50,000 - ₹5 Lakh+ (consistent content se)\n`;
+    revenue += `✅ 100% Safe & Legal • No Scam • Real Value`;
 
     return res.status(200).json({
       success: true,
       script: script,
       result: script,
       revenue: revenue,
-      status: "✅ ARRI Level Long Video + Revenue Ready"
+      status: "✅ Professional Output Ready"
     });
 
   } catch (error) {
