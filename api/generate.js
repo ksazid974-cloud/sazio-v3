@@ -13,11 +13,12 @@ export default async function handler(req, res) {
     let script = `🚀 Sazio AI ULTRA v2.0 — FULL PROFESSIONAL SYSTEM\n\n`;
     let revenue = `💰 FULL REVENUE & MONETIZATION SYSTEM\n\n`;
 
-    script += `📌 Duration: ${duration}\n`;
+    const finalDuration = duration || "Custom";
+
+    script += `📌 Duration: ${finalDuration}\n`;
     script += `🎯 Type: ${type}\n`;
     script += `💡 Idea: ${idea}\n\n`;
 
-    // Professional Output
     script += `🎬 PROFESSIONAL OUTPUT READY\n\n`;
     script += `1. Complete Story / Script (Hinglish)\n`;
     script += `2. Scene-by-Scene Breakdown + Editing Guide\n`;
@@ -25,8 +26,8 @@ export default async function handler(req, res) {
     script += `4. Advanced Editing Instructions (cuts, transitions, music, subtitles, b-roll)\n`;
     script += `5. Image Generation Prompts (Thumbnail, Poster, Scene Images)\n\n`;
 
-    if (duration.includes("hr") || type === "movie" || type === "webseries") {
-      script += `6. Full Long-Form Structure ready for ${duration} content\n`;
+    if (finalDuration.includes("hr") || type === "movie" || type === "webseries") {
+      script += `6. Full Long-Form Structure for ${finalDuration} content ready\n`;
     }
 
     script += `🛒 Price Comparison + Affiliate Links ready\n`;
@@ -35,7 +36,6 @@ export default async function handler(req, res) {
     script += `📱 Social Media Auto Upload Guide + Peak Time ready\n`;
     script += `🔮 Future Trend Prediction (2026-2030) ready\n`;
 
-    // Revenue Plan
     revenue += `• YouTube, Instagram, TikTok Monetization\n`;
     revenue += `• Pro Subscription Plan (₹99 - ₹499/month)\n`;
     revenue += `• Affiliate Marketing (Amazon, Flipkart, Meesho)\n`;
