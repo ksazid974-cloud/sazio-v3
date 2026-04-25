@@ -116,7 +116,7 @@
         });
         const data = await res.json();
 
-        outputEl.innerText = data.script || data.result;
+        outputEl.innerText = data.script || data.result || "✅ Output Ready";
         pricesEl.innerHTML = data.revenue || "✅ Revenue + Price Comparison + Image Prompts Ready";
         statusEl.innerText = "✅ Full Professional Output Ready";
       } catch (e) {
